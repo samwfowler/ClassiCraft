@@ -13,13 +13,14 @@ namespace ClassiCraft {
     public sealed partial class Player {
         public static List<Player> PlayerList = new List<Player>();
         public static List<Player> ConnectionList = new List<Player>();
-        public static ASCIIEncoding enc = new ASCIIEncoding();
-        public static MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+        static ASCIIEncoding enc = new ASCIIEncoding();
+        static MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+
         public System.Timers.Timer pingTimer = new System.Timers.Timer();
         public System.Timers.Timer drownTimer = new System.Timers.Timer();
-        public byte Version;
-        public byte MagicNumber;
-        public string Key;
+        byte Version;
+        byte MagicNumber;
+        string Key;
 
         public string Name;
         public string NamePrefix = "";
@@ -29,7 +30,7 @@ namespace ClassiCraft {
         public Rank Rank;
         public Level Level = Server.mainLevel;
 
-        public Socket Socket;
+        Socket Socket;
         byte[] buffer = new byte[0];
         byte[] tempBuffer = new byte[255];
         byte[] Bindings = new byte[128];
@@ -95,33 +96,6 @@ namespace ClassiCraft {
                 Server.Log( e.ToString() );
                 player.SendKick("Error!");
             }
-
-            int drownCount = 0;
-
-            player.drownTimer.Interval = 100000000;
-            player.drownTimer.Elapsed += delegate {
-                byte oldBlock;
-                byte newBlock;
-
-                if ( player.isLoggedIn ) {
-                    Server.Log( "GOT HERE !" );
-                    newBlock = player.Level.GetBlock( (ushort)( player.Pos[0] / 32 ), (ushort)( player.Pos[1] / 32 ), (ushort)( player.Pos[2] / 32 ) );
-                    oldBlock = player.Level.GetBlock( (ushort)( player.OldPos[0] / 32 ), (ushort)( player.OldPos[1] / 32 ), (ushort)( player.OldPos[2] / 32 ) );
-                    Server.Log( player.Name + " " + Block.Name( newBlock ) );
-                    Server.Log( player.Name + " " + Block.Name( oldBlock ) );
-                    if ( oldBlock == Block.Water && newBlock == Block.Water ) {
-                        drownCount++;
-                    } else {
-                        drownCount = 0;
-                    }
-
-                    if ( drownCount > 5 ) {
-                        player.SendMessage( "YOU'RE DROWNING!" );
-                    }
-                } else {
-                    return;
-                }
-            };
         }
 
         byte[] HandleMessage( byte[] buffer ) {
@@ -774,7 +748,7 @@ namespace ClassiCraft {
 
         public static Player Find( string name ) {
             foreach ( Player p in PlayerList ) {
-                if ( p.Name.ToLower() == name.ToLower() ) {
+                if ( p.Name.ToLower().Contains(name.ToLower()) ) {
                     return p;
                 }
             }

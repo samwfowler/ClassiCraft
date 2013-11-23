@@ -72,7 +72,11 @@ namespace ClassiCraft {
         }
 
         public void SetBlock( ushort x, ushort y, ushort z, byte type ) {
-            Blocks[x + Width * z + Width * Depth * y] = type;
+            try {
+                Blocks[x + Width * z + Width * Depth * y] = type;
+            } catch {
+                // do nothing.
+            }
         }
 
         public byte GetBlock( ushort x, ushort y, ushort z ) {

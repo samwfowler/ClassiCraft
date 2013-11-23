@@ -32,6 +32,7 @@ namespace ClassiCraft {
             CommandList.Add( new CmdPlayers() );
             CommandList.Add( new CmdRank() );
             CommandList.Add( new CmdReplace() );
+            CommandList.Add( new CmdReplaceAll() );
             CommandList.Add( new CmdRanks() );
             CommandList.Add( new CmdHideZones() );
             CommandList.Add( new CmdZone() );

@@ -23,7 +23,7 @@ namespace ClassiCraft {
                 blockList += Block.Name((byte)i) + " &f|&e ";
             }
             p.SendMessage( "Available materials: " );
-            p.SendMessage( blockList );
+            p.SendMessage( blockList.Substring( 0, blockList.Length - 7 ) );
         }
 
         public override void Help( Player p ) {

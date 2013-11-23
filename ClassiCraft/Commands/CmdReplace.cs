@@ -105,7 +105,7 @@ namespace ClassiCraft {
         }
 
         public override void Help( Player p ) {
-            p.SendMessage( "Replaces one material with another." );
+            p.SendMessage( "Replaces one material with another in a specified region." );
         }
     }
 }

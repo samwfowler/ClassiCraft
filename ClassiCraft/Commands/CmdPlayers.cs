@@ -29,7 +29,7 @@ namespace ClassiCraft {
                     }
                 } );
 
-                levels.Add( playerList );
+                levels.Add( playerList.Substring( 0, playerList.Length - 5 ) );
             } );
 
             if ( levels.Count > 0 ) {

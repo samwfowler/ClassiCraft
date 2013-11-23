@@ -63,6 +63,11 @@ namespace ClassiCraft {
                 targetPlayer.Rank = targetRank;
                 PlayerDB.Save( targetPlayer );
             }
+
+            Player.GlobalDespawn( p );
+            Player.PlayerList.ForEach( delegate( Player pl ) {
+                pl.SendSpawnPlayer( p.ID, p.Rank.Color + p.Name, p.Pos[0], p.Pos[1], p.Pos[2], p.Rot[0], p.Rot[1] );
+            } );
         }
 
         public override void Help( Player p ) {
