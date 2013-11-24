@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.ComponentModel;
 using System.IO;
+using System.Threading;
 
 namespace ClassiCraft {
     public class Server {
@@ -62,6 +63,19 @@ namespace ClassiCraft {
                 Player.GlobalMessage( "Running ClassiCraft " + version );
             };
             messageTimer.Start();
+
+            Thread posCheck = new Thread( new ThreadStart( delegate {
+                while ( true ) {
+                    Player.PlayerList.ForEach( delegate( Player p ) {
+                        byte currBlock = p.Level.GetBlock( (ushort)( p.Pos[0] / 32 ), (ushort)( ( p.Pos[1] / 32 ) - 1 ), (ushort)( p.Pos[2] / 32 ) );
+                        if ( currBlock == Block.Lava ) {
+                            p.Die();
+                            Thread.Sleep( 500 );
+                        }
+                    } );
+                }
+            } ) );
+            posCheck.Start();
         }
 
         public static bool Setup() {

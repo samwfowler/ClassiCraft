@@ -108,6 +108,11 @@ namespace ClassiCraft {
         public const byte PortalStonevine = (byte)148;
         public const byte PortalObsidian = (byte)149;
 
+        public static byte Random() {
+            Random rnd = new Random();
+            return (byte)rnd.Next( 21, 36 );
+        }
+
         public static string Name( byte type ) {
             switch ( type ) {
                 case 0: return "Air";

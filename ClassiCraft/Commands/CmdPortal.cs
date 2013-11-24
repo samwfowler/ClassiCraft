@@ -71,8 +71,10 @@ namespace ClassiCraft {
             z1 = z;
             previous = p.Level;
 
-            p.SendMessage( "&cPortal: &ePlace a block at the exit." );
-            p.OnBlockChange += Blockchange2;
+            if ( type == Block.Red || !multi ) {
+                p.SendMessage( "&cPortal: &ePlace a block at the exit." );
+                p.OnBlockChange += Blockchange2;
+            }
         }
 
         void Blockchange2( Player p, ushort x2, ushort y2, ushort z2, byte type ) {

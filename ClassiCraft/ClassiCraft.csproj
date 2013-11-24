@@ -72,6 +72,9 @@
     <Compile Include="Commands\CmdReplace.cs" />
     <Compile Include="Commands\CmdReplaceAll.cs" />
     <Compile Include="Commands\CmdSpleef.cs" />
+    <Compile Include="Commands\CmdBlockRun.cs" />
+    <Compile Include="Commands\CmdRecordBlocks.cs" />
+    <Compile Include="Games\Spleef.cs" />
     <Compile Include="Level\PortalDB.cs" />
     <Compile Include="Level\ZoneDB.cs" />
     <Compile Include="Player\PlayerDB.cs" />
@@ -98,6 +101,7 @@
     <Compile Include="Server\Server.cs" />
     <Compile Include="Level\Level.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

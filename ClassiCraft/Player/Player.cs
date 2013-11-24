@@ -16,6 +16,18 @@ namespace ClassiCraft {
         static ASCIIEncoding enc = new ASCIIEncoding();
         static MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
 
+        public delegate void BlockchangeEventHandler( Player p, ushort x, ushort y, ushort z, byte type );
+        public event BlockchangeEventHandler OnBlockChange = null;
+        public void ClearBlockChange() { OnBlockChange = null; }
+
+        public delegate void DeathHandler(Player p);
+        public event DeathHandler OnDeath;
+        public void ClearDeath() { OnDeath = null; }
+
+        public delegate void PosChangeHandler(Player p);
+        public event PosChangeHandler OnPosChange;
+        public void ClearPosChange() { OnPosChange = null; }
+
         public System.Timers.Timer pingTimer = new System.Timers.Timer();
         public System.Timers.Timer drownTimer = new System.Timers.Timer();
         byte Version;
@@ -26,6 +38,7 @@ namespace ClassiCraft {
         public string NamePrefix = "";
         public string NameSuffix = "";
         public string IP;
+        public int Coins;
         public byte ID;
         public Rank Rank;
         public Level Level = Server.mainLevel;
@@ -44,10 +57,6 @@ namespace ClassiCraft {
         public ushort[] BasePos = new ushort[3] { 0, 0, 0 };
         public byte[] Rot = new byte[2] { 0, 0 };
         public byte[] OldRot = new byte[2] { 0, 0 };
-
-        public delegate void BlockchangeEventHandler( Player p, ushort x, ushort y, ushort z, byte type );
-        public event BlockchangeEventHandler OnBlockChange = null;
-        public void ClearBlockChange() { OnBlockChange = null; }
 
         public Player( Socket socket ) {
             Socket = socket;
@@ -341,6 +350,9 @@ namespace ClassiCraft {
             Rot = new byte[2] { rotx, roty };
 
             UpdatePosition();
+            if ( OnPosChange != null ) {
+                OnPosChange(this);
+            }
         }
 
         void HandleChat( byte[] message ) {
@@ -360,7 +372,7 @@ namespace ClassiCraft {
             }
                 
             Server.Log( "<" + Level.Name + "> " + Name + ": " + text );
-            Message( this, text, true );
+            Message( this, Level, text, true );
         }
 
         void HandleCommand( string cmd, string args ) {
@@ -368,8 +380,12 @@ namespace ClassiCraft {
 
             if ( comm != null ) {
                 if ( comm.DefaultPerm <= Rank.Permission ) {
-                    comm.Use( this, args );
                     Server.Log( Name + " has used the command /" + cmd + " " + args + "..." );
+                    try {
+                        comm.Use( this, args );
+                    } catch {
+                        Server.Log( "EROR!!1!1!1111" );
+                    }
                 } else {
                     SendMessage( "&cYou are not permitted to use this command." );
                 }
@@ -619,16 +635,20 @@ namespace ClassiCraft {
             }
         }
 
-        public static void Message( Player from, string message, bool isChat = false ) {
+        public static void Message( Level to, string message ) {
+            Message( null, to, message, false );
+        }
+
+        public static void Message( Player from, Level to, string message, bool isChat = false ) {
             if ( isChat ) {
                 PlayerList.ForEach( delegate( Player p ) {
-                    if ( p.Level == from.Level ) {
+                    if ( p.Level == to ) {
                         p.SendMessage( from.Rank.Color + from.NamePrefix + from.Name + from.NameSuffix + "&f: " + message );
                     }
                 } );
             } else {
                 PlayerList.ForEach( delegate( Player p ) {
-                    if ( p.Level == from.Level ) {
+                    if ( p.Level == to ) {
                         p.SendMessage( message );
                     }
                 } );
@@ -692,10 +712,31 @@ namespace ClassiCraft {
 
         #region Other
 
+        public void Reward( int coins, string reason = "" ) {
+            Coins += coins;
+            SendMessage( "----------------------------------" );
+            SendMessage( "&bYou were rewarded &e" + coins + "&b coins!" );
+            if(reason != "") {
+            SendMessage( "&bReason: &e" + reason );
+            }
+            SendMessage( "&bYou now have a total of: &e" + Coins + " &bcoins!" );
+            SendMessage( "----------------------------------" );
+            Server.Log( Name + " was rewarded " + coins + " for: " + reason + "..." );
+            PlayerDB.Save(this);
+        }
+
+        public void Die() {
+            if ( OnDeath != null ) {
+                OnDeath(this);
+            }
+        }
+
         public static List<string> WordWrap( string message ) {
             List<string> lines = new List<string>();
             string validColorChars = "0123456789abcdef";
             string lastColor = "";
+
+            message = message.Trim();
 
             for ( int i = 0; i < message.Length; i++ ) {
                 char thisChar = message[i];
@@ -716,21 +757,25 @@ namespace ClassiCraft {
                 return lines;
             }
 
-            for ( int i = 0; i <= 64; i++ ) {
-                if ( message[i] == '&' && validColorChars.Contains( message[i + 1].ToString() ) ) {
-                    lastColor = message.Substring( i, 2 );
-                }
+            try {
+                for ( int i = 0; i <= 64; i++ ) {
+                    if ( message[i] == '&' && validColorChars.Contains( message[i + 1].ToString() ) ) {
+                        lastColor = message.Substring( i, 2 );
+                    }
 
-                if ( i == 64 ) {
-                    if ( message[i] == ' ' ) {
-                        lines.Add( message.Substring( 0, 64 ) );
-                        message = ">" + lastColor + " " + message.Remove( 0, 64 ).TrimStart();
-                    } else {
-                        int breakIndex = message.Substring( 0, 64 ).LastIndexOf( ' ' );
-                        lines.Add( message.Substring( 0, breakIndex ) );
-                        message = ">" + lastColor + " " + message.Remove( 0, breakIndex ).TrimStart();
+                    if ( i == 64 ) {
+                        if ( message[i] == ' ' ) {
+                            lines.Add( message.Substring( 0, 64 ) );
+                            message = ">" + lastColor + " " + message.Remove( 0, 64 ).Trim();
+                        } else {
+                            int breakIndex = message.Substring( 0, 64 ).LastIndexOf( ' ' );
+                            lines.Add( message.Substring( 0, breakIndex ) );
+                            message = ">" + lastColor + " " + message.Remove( 0, breakIndex ).Trim();
+                        }
                     }
                 }
+            } catch {
+                Server.Log( "ERROR!!!!!" );
             }
 
             goto next;

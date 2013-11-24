@@ -17,6 +17,7 @@ namespace ClassiCraft {
             CommandList.Add( new CmdAddLevel() );
             CommandList.Add( new CmdBan() );
             CommandList.Add( new CmdBanned() );
+            CommandList.Add( new CmdBlockRun() );
             CommandList.Add( new CmdBox() );
             CommandList.Add( new CmdCommands() );
             CommandList.Add( new CmdDelLevel() );
@@ -34,6 +35,7 @@ namespace ClassiCraft {
             CommandList.Add( new CmdReplace() );
             CommandList.Add( new CmdReplaceAll() );
             CommandList.Add( new CmdRanks() );
+            CommandList.Add( new CmdRecordBlocks() );
             CommandList.Add( new CmdHideZones() );
             CommandList.Add( new CmdZone() );
             CommandList.Add( new CmdShowZones() );

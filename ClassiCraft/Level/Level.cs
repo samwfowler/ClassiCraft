@@ -25,6 +25,9 @@ namespace ClassiCraft {
         public List<BufferPos> TempBuffers;
 
         public bool hasChanged = false;
+        public bool isHostingGame = false;
+
+        public SpleefGame currentGame;
 
         public Level( string name, ushort x, ushort y, ushort z ) {
             Name = name;
@@ -92,13 +95,16 @@ namespace ClassiCraft {
         }
 
         public void Blockchange( ushort x, ushort y, ushort z, byte type ) {
-            foreach ( Player p in Player.PlayerList ) {
-                if ( p.Level == this ) {
-                    p.SendSetBlock( x, y, z, type );
-                }
+            if ( GetBlock( x, y, z ) != type ) {
+                Player.PlayerList.ForEach( delegate( Player p ) {
+                    if ( p.Level == this ) {
+                        p.SendSetBlock( x, y, z, type );
+                    }
+                } );
+
+                SetBlock( x, y, z, type );
+                hasChanged = true;
             }
-            SetBlock( x, y, z, type );
-            hasChanged = true;
         }
 
         public void Blockchange( Player player, ushort x, ushort y, ushort z, byte type ) {
