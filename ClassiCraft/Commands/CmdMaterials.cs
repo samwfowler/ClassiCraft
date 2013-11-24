@@ -14,16 +14,17 @@ namespace ClassiCraft {
         }
 
         public override PermissionLevel DefaultPerm {
-            get { return PermissionLevel.Operator; }
+            get { return PermissionLevel.Guest; }
         }
 
         public override void Use( Player p, string args ) {
             string blockList = "";
             for ( int i = 0; i <= 49; i++ ) {
-                blockList += Block.Name((byte)i) + " &f|&e ";
+                blockList += "&e" + Block.Name((byte)i) + " &f| ";
             }
+            Server.Log( blockList );
             p.SendMessage( "Available materials: " );
-            p.SendMessage( blockList.Substring( 0, blockList.Length - 7 ) );
+            p.SendMessage( blockList.Substring( 0, blockList.Length - 5 ) );
         }
 
         public override void Help( Player p ) {

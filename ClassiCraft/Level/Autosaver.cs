@@ -10,7 +10,7 @@ namespace ClassiCraft {
         public static void Setup() {
             backupTimer.Elapsed += delegate {
                 foreach ( Level lvl in Level.LevelList ) {
-                    if ( lvl.hasChanged ) {
+                    if ( lvl.hasChanged && !lvl.Name.Contains("(spleef)") ) {
                         lvl.Save();
                     }
                 }

@@ -21,7 +21,7 @@ namespace ClassiCraft {
             List<string> levels = new List<string>();
 
             Level.LevelList.ForEach( delegate( Level l ) {
-                string playerList = l.Name + " - ";
+                string playerList = "";
 
                 Player.PlayerList.ForEach( delegate( Player pl ) {
                     if ( pl.Level == l ) {
@@ -29,7 +29,9 @@ namespace ClassiCraft {
                     }
                 } );
 
-                levels.Add( playerList.Substring( 0, playerList.Length - 5 ) );
+                if ( playerList != "" ) {
+                    levels.Add( l.Name + " - " + playerList.Substring( 0, playerList.Length - 5 ) );
+                }
             } );
 
             if ( levels.Count > 0 ) {

@@ -22,7 +22,7 @@ namespace ClassiCraft {
 
             Command.CommandList.ForEach( delegate( Command cmd ) {
                 if ( cmd.DefaultPerm <= p.Rank.Permission ) {
-                    cmdList += Rank.GetColor(cmd.DefaultPerm) + cmd.Name.ToLower() + " &f| ";
+                    cmdList += Rank.GetColor(cmd.DefaultPerm) + cmd.Name.ToLower() + "  ";
                 }
             } );
 

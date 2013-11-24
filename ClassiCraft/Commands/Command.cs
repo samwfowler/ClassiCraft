@@ -45,6 +45,7 @@ namespace ClassiCraft {
             CommandList.Add( new CmdSetMain() );
             CommandList.Add( new CmdSetSpawn() );
             CommandList.Add( new CmdSpawn() );
+            CommandList.Add( new CmdSpleef() );
             CommandList.Add( new CmdPortal() );
             CommandList.Add( new CmdUnban() );
         }

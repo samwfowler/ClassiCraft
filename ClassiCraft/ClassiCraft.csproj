@@ -70,6 +70,8 @@
     <Compile Include="Commands\CmdSpawn.cs" />
     <Compile Include="Commands\CmdMaterials.cs" />
     <Compile Include="Commands\CmdReplace.cs" />
+    <Compile Include="Commands\CmdReplaceAll.cs" />
+    <Compile Include="Commands\CmdSpleef.cs" />
     <Compile Include="Level\PortalDB.cs" />
     <Compile Include="Level\ZoneDB.cs" />
     <Compile Include="Player\PlayerDB.cs" />

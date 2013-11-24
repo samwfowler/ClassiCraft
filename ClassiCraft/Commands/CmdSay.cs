@@ -23,7 +23,7 @@ namespace ClassiCraft {
                 return;
             }
 
-            Player.GlobalMessage( "&c# &e" + args );
+            Player.GlobalMessage( "&c>> &d" + args );
         }
 
         public override void Help( Player p ) {

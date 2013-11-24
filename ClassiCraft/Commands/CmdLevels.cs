@@ -21,12 +21,12 @@ namespace ClassiCraft {
             string levels = "";
 
             Level.LevelList.ForEach( delegate( Level lvl ) {
-                levels += Rank.GetColor( lvl.BuildPermission ) + lvl.Name + ", ";
+                levels += Rank.GetColor( lvl.BuildPermission ) + lvl.Name + " &f| ";
             } );
 
             if ( levels != "" ) {
                 p.SendMessage( "Levels online:" );
-                p.SendMessage( levels.Remove( levels.Length - 2 ) );
+                p.SendMessage( levels.Remove( levels.Length - 5 ) );
             }
         }
 
