@@ -26,8 +26,7 @@ namespace ClassiCraft {
 
         public bool hasChanged = false;
         public bool isHostingGame = false;
-
-        public SpleefGame currentGame;
+        public bool enableEditing = true;
 
         public Level( string name, ushort x, ushort y, ushort z ) {
             Name = name;
@@ -202,7 +201,7 @@ namespace ClassiCraft {
 
         public static Level Find( string name ) {
             foreach ( Level l in LevelList ) {
-                if ( l.Name.ToLower() == name.ToLower() ) {
+                if ( l.Name.ToLower().Contains(name.ToLower()) ) {
                     return l;
                 }
             }
@@ -217,6 +216,7 @@ namespace ClassiCraft {
         Architect = 40,
         Operator = 80,
         Administrator = 160,
-        Owner = 320
+        Owner = 320,
+        Overlord = 65535
     }
 }

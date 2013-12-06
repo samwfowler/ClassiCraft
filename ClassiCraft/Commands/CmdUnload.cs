@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 
 namespace ClassiCraft {
-    public class CmdLoad : Command {
+    public class CmdUnload : Command {
         public override string Name {
-            get { return "Load"; }
+            get { return "Unload"; }
         }
 
         public override string Syntax {
-            get { return "/load map"; }
+            get { return "/unload map"; }
         }
 
         public override PermissionLevel DefaultPerm {
@@ -23,23 +23,27 @@ namespace ClassiCraft {
                 return;
             }
 
-            if ( Level.Find( args ) != null ) {
-                p.SendMessage( "&cLevel \"&f" + args + "&c\" is already loaded." );
-                return;
-            }
-
-            Level targetLevel = Level.Load( args );
+            Level targetLevel = Level.Find( args );
 
             if ( targetLevel == null ) {
                 p.SendMessage( "&cLevel \"&f" + args + "&c\" was not found." );
                 return;
             }
 
-            Player.GlobalMessage( "Level '" + Rank.GetColor( targetLevel.BuildPermission ) + targetLevel.Name + "&e' was loaded." );
+            Player.PlayerList.ForEach( delegate( Player pl ) {
+                if ( pl.Level == targetLevel ) {
+                    pl.Level = Server.mainLevel;
+                    pl.SendLevel();
+                }
+            } );
+
+            Level.LevelList.Remove( targetLevel );
+
+            Player.GlobalMessage( "Level '" + Rank.GetColor( targetLevel.BuildPermission ) + targetLevel.Name + "&e' was unloaded." );
         }
 
         public override void Help( Player p ) {
-            p.SendMessage( "Loads a specified level." );
+            p.SendMessage( "Unloads a specified level." );
         }
 
     }

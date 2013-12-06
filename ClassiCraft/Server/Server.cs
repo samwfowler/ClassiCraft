@@ -67,10 +67,54 @@ namespace ClassiCraft {
             Thread posCheck = new Thread( new ThreadStart( delegate {
                 while ( true ) {
                     Player.PlayerList.ForEach( delegate( Player p ) {
-                        byte currBlock = p.Level.GetBlock( (ushort)( p.Pos[0] / 32 ), (ushort)( ( p.Pos[1] / 32 ) - 1 ), (ushort)( p.Pos[2] / 32 ) );
-                        if ( currBlock == Block.Lava ) {
-                            p.Die();
-                            Thread.Sleep( 500 );
+                        try {
+                            if ( p.isLoggedIn ) {
+                                ushort x = (ushort)(p.Pos[0] / 32);
+                                ushort y = (ushort)(p.Pos[1] / 32);
+                                ushort z = (ushort)(p.Pos[2] / 32);
+                                byte currHeadBlock = p.Level.GetBlock( x, y, z );
+                                byte currFootBlock = p.Level.GetBlock( x, (ushort)( y - 1 ), z );
+
+                                if ( currHeadBlock == Block.Lava || currFootBlock == Block.Lava ) {
+                                    p.Die();
+                                } else if ( currHeadBlock == Block.PortalAir || currHeadBlock == Block.PortalLava || currHeadBlock == Block.PortalWater ) {
+                                    PortalDB.PortalList.ForEach( delegate( Portal po ) {
+                                        if ( po.x1 == x && po.y1 == y && po.z1 == z && po.Destination == p.Level ) {
+                                            ushort xx = po.x2;
+                                            ushort yy = po.y2;
+                                            ushort zz = po.z2;
+
+                                            xx *= 32; xx += 16;
+                                            yy *= 32; yy += 32;
+                                            zz *= 32; zz += 16;
+
+                                            unchecked {
+                                                p.SendSpawnPlayer( (byte)-1, p.Rank.Color + p.Name, xx, yy, zz, p.Rot[0], p.Rot[1] );
+                                            }
+                                        }
+                                    } );
+                                } else if ( currFootBlock == Block.PortalAir || currFootBlock == Block.PortalLava || currFootBlock == Block.PortalWater ) {
+                                    PortalDB.PortalList.ForEach( delegate( Portal po ) {
+                                        if ( po.x1 == x && po.y1 == (ushort)( y - 1 ) && po.z1 == z && po.Destination == p.Level ) {
+                                            ushort xx = po.x2;
+                                            ushort yy = po.y2;
+                                            ushort zz = po.z2;
+
+                                            xx *= 32; xx += 16;
+                                            yy *= 32; yy += 32;
+                                            zz *= 32; zz += 16;
+
+                                            unchecked {
+                                                p.SendSpawnPlayer( (byte)-1, p.Rank.Color + p.Name, xx, yy, zz, p.Rot[0], p.Rot[1] );
+                                            }
+                                        }
+                                    } );
+                                }
+
+                                Thread.Sleep( 500 );
+                            }
+                        } catch {
+
                         }
                     } );
                 }

@@ -47,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\BufferPos.cs" />
-    <Compile Include="Commands\CmdGotoLevel.cs" />
+    <Compile Include="Commands\CmdGoto.cs" />
     <Compile Include="Commands\CmdAddLevel.cs" />
     <Compile Include="Commands\CmdDelLevel.cs" />
     <Compile Include="Commands\CmdInfo.cs" />
@@ -74,6 +74,19 @@
     <Compile Include="Commands\CmdSpleef.cs" />
     <Compile Include="Commands\CmdBlockRun.cs" />
     <Compile Include="Commands\CmdRecordBlocks.cs" />
+    <Compile Include="Commands\CmdWhois.cs" />
+    <Compile Include="Commands\CmdWhowas.cs" />
+    <Compile Include="Commands\CmdGames.cs" />
+    <Compile Include="Commands\CmdCopy.cs" />
+    <Compile Include="Commands\CmdPaste.cs" />
+    <Compile Include="Commands\BufferCopy.cs" />
+    <Compile Include="Commands\CmdTitle.cs" />
+    <Compile Include="Commands\CmdMute.cs" />
+    <Compile Include="Commands\CmdPaint.cs" />
+    <Compile Include="Commands\CmdUnmute.cs" />
+    <Compile Include="Commands\CmdUnload.cs" />
+    <Compile Include="Commands\CmdFeatures.cs" />
+    <Compile Include="Games\Blockrun.cs" />
     <Compile Include="Games\Spleef.cs" />
     <Compile Include="Level\PortalDB.cs" />
     <Compile Include="Level\ZoneDB.cs" />

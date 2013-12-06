@@ -35,13 +35,13 @@ namespace ClassiCraft {
                 return;
             }
 
-            if ( targetPlayer == p ) {
-                p.SendMessage( "&cYou cannot change your own rank." );
-                return;
-            } else if ( targetRank.Permission >= p.Rank.Permission && p.Rank.Permission < PermissionLevel.Owner ) {
-                p.SendMessage( "&cYou must specify a rank with a lower permission to yours." );
-                return;
-            }
+            //if ( targetPlayer == p ) {
+            //    p.SendMessage( "&cYou cannot change your own rank." );
+            //    return;
+            //} else if ( targetRank.Permission >= p.Rank.Permission && p.Rank.Permission < PermissionLevel.Owner ) {
+            //    p.SendMessage( "&cYou must specify a rank with a lower permission to yours." );
+            //    return;
+            //}
 
             if ( targetRank.Permission > targetPlayer.Rank.Permission ) {
                 rankchangetype = RankChangeType.Promotion;
@@ -54,19 +54,21 @@ namespace ClassiCraft {
 
             if ( rankchangetype == RankChangeType.Promotion ) {
                 Player.GlobalMessage( targetPlayer.Rank.Color + targetPlayer.Name + " &ewas promoted from " + targetPlayer.Rank.Color + targetPlayer.Rank.Name + " &eto " + targetRank.Color + targetRank.Name + "&e." );
-                p.SendMessage( "&6You've been promoted!" );
+                targetPlayer.SendMessage( "&6You've been promoted!" );
                 targetPlayer.Rank = targetRank;
                 PlayerDB.Save( targetPlayer );
             } else if ( rankchangetype == RankChangeType.Demotion ) {
                 Player.GlobalMessage( targetPlayer.Rank.Color + targetPlayer.Name + " &cwas demoted from " + targetPlayer.Rank.Color + targetPlayer.Rank.Name + " &cto " + targetRank.Color + targetRank.Name + "&c." );
-                p.SendMessage( "&4You've been demoted." );
+                targetPlayer.SendMessage( "&4You've been demoted." );
                 targetPlayer.Rank = targetRank;
                 PlayerDB.Save( targetPlayer );
             }
 
-            Player.GlobalDespawn( p );
+            Player.GlobalDespawn( targetPlayer );
             Player.PlayerList.ForEach( delegate( Player pl ) {
-                pl.SendSpawnPlayer( p.ID, p.Rank.Color + p.Name, p.Pos[0], p.Pos[1], p.Pos[2], p.Rot[0], p.Rot[1] );
+                if ( pl != targetPlayer ) {
+                    pl.SendSpawnPlayer( targetPlayer.ID, targetPlayer.Rank.Color + targetPlayer.Name, targetPlayer.Pos[0], targetPlayer.Pos[1], targetPlayer.Pos[2], targetPlayer.Rot[0], targetPlayer.Rot[1] );
+                }
             } );
         }
 

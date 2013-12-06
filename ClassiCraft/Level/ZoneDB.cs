@@ -37,7 +37,8 @@ namespace ClassiCraft {
         public static void SaveZones() {
             StreamWriter sw = new StreamWriter( File.Create( DBFile ) );
             foreach ( Zone z in ZoneList ) {
-                sw.WriteLine( z.Level.Name + " : " + 
+                sw.WriteLine( 
+                    z.Level.Name + " : " + 
                     z.x1 + " : " + 
                     z.x2 + " : " + 
                     z.y1 + " : " + 

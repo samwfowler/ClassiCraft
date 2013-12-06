@@ -64,7 +64,7 @@ namespace ClassiCraft {
             Zone newZone = new Zone( p.Level.Name, x1, x2, y1, y2, z1, z2, targetRank.Permission );
             ZoneDB.SaveZones();
 
-            p.SendMessage( "&cZone: &eSuccessfully created zone for " + Rank.GetColor( newZone.Permission ) + Rank.Find( newZone.Permission ).Name + "&e." );
+            p.SendMessage( "&cZone: &eSuccessfully created zone for " + targetRank.Color + targetRank.Name + "&e." );
         }
 
         public override void Help( Player p ) {

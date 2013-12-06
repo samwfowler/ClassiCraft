@@ -16,34 +16,37 @@ namespace ClassiCraft {
         public void GameStart(Level level, bool autorun = true) {
             spleefLevel = level;
             spleefLevel.isHostingGame = true;
+            spleefLevel.enableEditing = false;
             autoRun = autorun;
             SpleefifyLevel();
             
             gameThread = new Thread( new ThreadStart( delegate {
                 Player.GlobalMessage( "Spleef was started on " + Rank.GetColor(spleefLevel.JoinPermission) +  spleefLevel.Name + "&e, type &f/goto " + spleefLevel.Name + " &eto join." );
                 Thread.Sleep( 5000 );
-                Player.Message( spleefLevel, "Spleef starting in &a15 seconds&e..." );
+                Player.Message( spleefLevel, "Spleef starting in &a15 seconds" );
                 Thread.Sleep( 10000 );
-                Player.Message( spleefLevel, "Spleef starting in &c5&e..." );
+                Player.Message( spleefLevel, "Spleef starting in &c5" );
                 Thread.Sleep( 1000 );
-                Player.Message( spleefLevel, "Spleef starting in &c4&e..." );
+                Player.Message( spleefLevel, "Spleef starting in &c4" );
                 Thread.Sleep( 1000 );
-                Player.Message( spleefLevel, "Spleef starting in &c3&e..." );
+                Player.Message( spleefLevel, "Spleef starting in &c3" );
                 Thread.Sleep( 1000 );
-                Player.Message( spleefLevel, "Spleef starting in &c2&e..." );
+                Player.Message( spleefLevel, "Spleef starting in &c2" );
                 Thread.Sleep( 1000 );
-                Player.Message( spleefLevel, "Spleef starting in &c1&e..." );
+                Player.Message( spleefLevel, "Spleef starting in &c1" );
                 Thread.Sleep( 1000 );
-                Player.Message( spleefLevel, "Spleef game &astarted&e..." );
+                Player.Message( spleefLevel, "Spleef game &astarted" );
 
                 players = new List<Player>();
-                Player.PlayerList.ForEach( delegate( Player pl ) {
+                //Player.PlayerList.ForEach( delegate( Player pl ) {
+                foreach ( Player pl in Player.PlayerList ) {
                     if ( pl.Level == spleefLevel ) {
                         players.Add( pl );
-                        pl.SendServerIdentification();
+                        //pl.SendLevel();
                         pl.OnDeath += PlayerDeath;
                     }
-                } );
+                }
+                //} );
 
                 isRunning = true;
 
@@ -55,11 +58,9 @@ namespace ClassiCraft {
                     }
                 }
 
-            flushStart:
-
                 while ( planeBlocks.Count > 0 ) {
                     List<BufferPos> randomBlocks = new List<BufferPos>();
-                    int blockNum = ( spleefLevel.Width * spleefLevel.Depth ) / 12;
+                    int blockNum = ( spleefLevel.Width * spleefLevel.Depth ) / 8;
                     Random randPos = new Random();
 
                     for ( int i = 0; i < blockNum; i++ ) {
@@ -77,11 +78,12 @@ namespace ClassiCraft {
                         planeBlocks.Remove( bp );
                     } Thread.Sleep( 1000 );
 
-                    if ( players.Count > 0 ) {
-                        goto flushStart;
+                    if ( players.Count <= 0 ) {
+                        goto gameend;
                     }
                 }
 
+                gameend:
                 GameEnd();
             } ) );
             gameThread.Start();
@@ -97,50 +99,47 @@ namespace ClassiCraft {
             }
 
             players.Remove( p );
+            p.ClearPosChange();
+            p.ClearDeath();
             Player.Message( spleefLevel, p.Rank.Color + p.Name + " &cfell into the lava!" );
         }
 
         public void GameEnd() {
             isRunning = false;
-            Player.GlobalMessage( "Spleef game &cover&e..." );
+            Player.GlobalMessage( "Spleef game &cended" );
 
             string survivors = "";
             foreach ( Player p in players ) {
                 survivors += " &f| " + p.Rank.Color + p.Name;
-                lastSurvivor.Reward( 50, "Survived a whole game of spleef." );
+                p.Reward( 50, "Survived a whole game of spleef." );
+                p.ClearBlockChange();
+                p.ClearDeath();
             }
 
             if ( survivors != "" ) {
                 Player.Message( spleefLevel, "&aRound Winners: " + survivors.Remove( 0, 5 ) );
             } else {
-                Player.Message( spleefLevel, "&aRound Winner: " + lastSurvivor.Rank.Color + lastSurvivor.Rank.Name );
+                Player.Message( spleefLevel, "&aRound Winner: " + lastSurvivor.Rank.Color + lastSurvivor.Name );
                 lastSurvivor.Reward( 25, "Last survivor in spleef." );
             }
+
+            SpleefifyLevel();
 
             if ( autoRun ) {
                 GameStart( spleefLevel );
             } else {
                 spleefLevel.isHostingGame = false;
+                spleefLevel.enableEditing = true;
             }
         }
 
         public void SpleefifyLevel() {
             for ( ushort xx = 0; xx < spleefLevel.Width; xx++ ) {
-                for ( ushort yy = 0; yy < spleefLevel.Height; yy++ ) {
-                    for ( ushort zz = 0; zz < spleefLevel.Depth; zz++ ) {
-                        ushort half = (ushort)( spleefLevel.Height / 2 );
-                        if ( yy == half ) {
-                            spleefLevel.Blockchange( xx, yy, zz, Block.White );
-                        } else if ( yy < half ) {
-                            if ( yy == 0 ) {
-                                spleefLevel.Blockchange( xx, yy, zz, Block.Lava );
-                            } else {
-                                spleefLevel.Blockchange( xx, yy, zz, Block.Air );
-                            }
-                        } else {
-                            spleefLevel.Blockchange( xx, yy, zz, Block.Air );
-                        }
-                    }
+                ushort yy = (ushort)(spleefLevel.Height / 2);
+                for ( ushort zz = 0; zz < spleefLevel.Depth; zz++ ) {
+                    spleefLevel.Blockchange( xx, yy, zz, Block.White );
+                    spleefLevel.Blockchange( xx, (ushort)( yy - 1 ), zz, Block.Lava );
+                    spleefLevel.Blockchange( xx, (ushort)( yy - 2 ), zz, Block.Lava );
                 }
             }
         }

@@ -28,6 +28,9 @@ namespace ClassiCraft {
 
                             p.Rank = targetRank;
                             break;
+                        case "title":
+                            p.NamePrefix = value;
+                            break;
                         case "coins":
                             p.Coins = int.Parse( value );
                             break;
@@ -40,6 +43,7 @@ namespace ClassiCraft {
             try {
                 StreamWriter sw = new StreamWriter( File.Create( "players/" + p.Name + ".db" ) );
                 sw.WriteLine( "Rank = " + p.Rank.Name );
+                sw.WriteLine( "Title = " + p.NamePrefix );
                 sw.WriteLine( "Coins = " + p.Coins );
                 sw.Flush();
                 sw.Close();

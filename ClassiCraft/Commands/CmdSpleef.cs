@@ -31,7 +31,6 @@ namespace ClassiCraft {
                 return;
             }
 
-            p.Level.currentGame = newGame;
             newGame.GameStart(p.Level, autorun);
         }
 

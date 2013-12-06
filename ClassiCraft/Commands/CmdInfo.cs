@@ -25,6 +25,7 @@ namespace ClassiCraft {
                 p.SendMessage( "There are &a" + Player.PlayerList.Count + " &eplayers online." );
             }
             p.SendMessage( "Thankyou for playing on this server!" );
+            p.SendMessage( "New to the software? Use &b/features &efor some info." );
         }
 
         public override void Help( Player p ) {

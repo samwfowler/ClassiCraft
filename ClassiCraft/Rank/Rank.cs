@@ -124,7 +124,7 @@ namespace ClassiCraft {
 
         public static Rank Find( string name ) {
             foreach ( Rank r in RankList ) {
-                if ( r.Name.ToLower() == name.ToLower() ) {
+                if ( r.Name.ToLower().Contains( name.ToLower() ) ) {
                     return r;
                 }
             }
@@ -132,8 +132,9 @@ namespace ClassiCraft {
         }
 
         public static Rank Find( PermissionLevel perm ) {
+            retry:
             foreach ( Rank r in RankList ) {
-                if ( r.Permission == perm ) {
+                if ( r.Permission <= perm ) {
                     return r;
                 }
             }
@@ -141,12 +142,13 @@ namespace ClassiCraft {
         }
 
         public static string GetColor( PermissionLevel perm ) {
+            retry:
             foreach ( Rank rnk in Rank.RankList ) {
                 if ( rnk.Permission == perm ) {
                     return rnk.Color;
                 }
             }
-            return "";
+            return null;
         }
     }
 }

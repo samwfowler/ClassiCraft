@@ -42,15 +42,18 @@ namespace ClassiCraft {
         public byte ID;
         public Rank Rank;
         public Level Level = Server.mainLevel;
+        public BufferCopy BufferCopy;
 
         Socket Socket;
         byte[] buffer = new byte[0];
         byte[] tempBuffer = new byte[255];
         byte[] Bindings = new byte[128];
 
-        public bool hasDisconnected;
-        public bool isLoggedIn;
-        public bool isCPECapable;
+        public bool hasDisconnected = false;
+        public bool isLoggedIn = false;
+        public bool isMuted = false;
+        public bool isCPECapable = false;
+        public bool isPainting = false;
 
         public ushort[] Pos = new ushort[3] { 0, 0, 0 };
         public ushort[] OldPos = new ushort[3] { 0, 0, 0 };
@@ -191,6 +194,13 @@ namespace ClassiCraft {
                 return;
             }
 
+            foreach ( Player p in PlayerList ) {
+                if ( p.Name.ToLower() == Name.ToLower() ) {
+                    Kick( "Someone is already logged in with your username!" );
+                    return;
+                }
+            }
+
             if ( Config.verifyPlayers ) {
                 if ( Key == BitConverter.ToString( md5.ComputeHash( enc.GetBytes( Server.salt + Name ) ) ) ) {
                     Server.Log( "Signed in!" );
@@ -216,7 +226,7 @@ namespace ClassiCraft {
             SendLevel();
 
             if ( Name.ToLower() == "marvy" || Name.ToLower() == "herocane" ) {
-                Rank = Rank.Find( PermissionLevel.Owner );
+                Rank = Rank.RankList[Rank.RankList.Count - 1];
             }
 
             Server.Log( "--> " + Name + " has joined (IP: " + IP + ")..." );
@@ -225,20 +235,6 @@ namespace ClassiCraft {
             foreach ( string line in Server.welcomeMessage ) {
                 SendMessage( line );
             }
-
-            ushort x = (ushort)( ( 0.5 + Level.SpawnX ) * 32 );
-            ushort y = (ushort)( ( 1 + Level.SpawnY ) * 32 );
-            ushort z = (ushort)( ( 0.5 + Level.SpawnZ ) * 32 );
-            Pos = new ushort[3] { x, y, z }; 
-            Rot = new byte[2] { Level.SpawnRX, Level.SpawnRY };
-
-            GlobalSpawn( this, x, y, z, Rot[0], Rot[1] );
-
-            PlayerList.ForEach( delegate( Player p ) {
-                if ( p.Level == Level && p != this ) {
-                    SendSpawnPlayer( p.ID, p.Rank.Color + p.Name, p.Pos[0], p.Pos[1], p.Pos[2], p.Rot[0], p.Rot[1] );
-                }
-            } );
 
             drownTimer.Start();
         }
@@ -250,15 +246,24 @@ namespace ClassiCraft {
             byte mode = message[6];
             byte type = message[7];
 
+            if ( !Level.enableEditing ) {
+                byte b = Level.GetBlock( x, y, z );
+                SendSetBlock( x, y, z, b );
+                SendMessage( "&cBuilding on this map has been disabled." );
+                return;
+            }
+
             if ( Level.BuildPermission > Rank.Permission ) {
                 byte b = Level.GetBlock( x, y, z );
                 SendSetBlock( x, y, z, b );
-                SendMessage( "&cThis level is reserved for " + Rank.Find(Level.BuildPermission).Color + Rank.Find(Level.BuildPermission).Name + "&c." );
+                SendMessage( "&cThis level is reserved for " + Rank.GetColor(Level.BuildPermission) + Rank.Find(Level.BuildPermission).Name + "&c." );
                 return;
             }
 
             foreach ( Zone zn in ZoneDB.ZoneList ) {
+                SendMessage( "GOT HERE1" );
                 if ( zn.x1 <= x && zn.x2 >= x && zn.y1 <= y && zn.y2 >= y && zn.z1 <= z && zn.z2 >= z && zn.Permission > Rank.Permission) {
+                    SendMessage( "GOT HERE2" );
                     byte b = Level.GetBlock( x, y, z );
                     SendSetBlock( x, y, z, b );
                     SendMessage( "&cThis zone is reserved for " + Rank.GetColor(zn.Permission) + Rank.Find(zn.Permission).Name + "&c." );
@@ -270,6 +275,10 @@ namespace ClassiCraft {
                 if ( p.x1 == x && p.y1 == y && p.z1 == z ) {
                     byte b = Level.GetBlock( x, y, z );
                     SendSetBlock( x, y, z, b );
+
+                    if ( b == Block.PortalWater || b == Block.PortalAir || b == Block.PortalLava ) {
+                        return;
+                    }
 
                     ushort xx = p.x2;
                     ushort yy = p.y2;
@@ -291,7 +300,7 @@ namespace ClassiCraft {
                 return;
             }
 
-            if ( mode == 0 ) {
+            if ( mode == 0 && !isPainting ) {
                 HandleBlockDelete( x, y, z, type );
             } else {
                 HandleBlockPlace( x, y, z, type );
@@ -366,12 +375,21 @@ namespace ClassiCraft {
                 return;
             } else if ( text.StartsWith( "#" ) ) {
                 text = text.Remove( 0, 1 );
+                if ( isMuted ) {
+                    SendMessage( "&cYou're muted. You can't talk." );
+                    return;
+                }
                 Server.Log( "# " + Name + ": " + text );
                 GlobalMessage( this, text, true );
                 return;
             }
-                
-            Server.Log( "<" + Level.Name + "> " + Name + ": " + text );
+
+            if ( isMuted ) {
+                SendMessage( "&cYou're muted. You can't talk." );
+                return;
+            }
+
+            Server.Log( "<" + Level.Name + "> " + Name + ": " + text ); 
             Message( this, Level, text, true );
         }
 
@@ -438,6 +456,19 @@ namespace ClassiCraft {
             SendLevelInitialize();
             SendLevelDataChunk();
             SendLevelFinalize();
+
+            Player.GlobalSpawn( this,
+                                (ushort)( ( 0.5 + Level.SpawnX ) * 32 ),
+                                (ushort)( ( 1 + Level.SpawnY ) * 32 ),
+                                (ushort)( ( 0.5 + Level.SpawnZ ) * 32 ),
+                                Level.SpawnRX,
+                                Level.SpawnRY );
+
+            Player.PlayerList.ForEach( delegate( Player pl ) {
+                if ( pl.Level == Level && pl != this ) {
+                    SendSpawnPlayer( pl.ID, pl.Rank.Color + pl.Name, pl.Pos[0], pl.Pos[1], pl.Pos[2], pl.Rot[0], pl.Rot[1] );
+                }
+            } );
         }
 
         public void SendLevelInitialize() {
@@ -510,6 +541,9 @@ namespace ClassiCraft {
         public void SendMessage( byte id, string message ) {
             byte[] messageData = new byte[65];
             messageData[0] = id;
+
+            message = message.Replace( '%', '&' );
+            message = message.Trim();
 
             foreach ( string line in WordWrap( message ) ) {
                 StringFormat( line, 64 ).CopyTo( messageData, 1 );
@@ -626,7 +660,7 @@ namespace ClassiCraft {
         public static void GlobalMessage( Player from, string message, bool isChat = false ) {
             if ( isChat ) {
                 PlayerList.ForEach( delegate( Player p ) {
-                    p.SendMessage( "&c# " + from.Rank.Color + from.NamePrefix + from.Name + from.NameSuffix + "&f: " + message );
+                    p.SendMessage( "&c# " + from.Rank.Color + from.NamePrefix + " " + from.Name + from.NameSuffix + "&f: " + message );
                 } );
             } else {
                 PlayerList.ForEach( delegate( Player p ) {
@@ -643,7 +677,7 @@ namespace ClassiCraft {
             if ( isChat ) {
                 PlayerList.ForEach( delegate( Player p ) {
                     if ( p.Level == to ) {
-                        p.SendMessage( from.Rank.Color + from.NamePrefix + from.Name + from.NameSuffix + "&f: " + message );
+                        p.SendMessage( from.Rank.Color + from.NamePrefix + " " + from.Name + from.NameSuffix + "&f: " + message );
                     }
                 } );
             } else {
@@ -714,13 +748,13 @@ namespace ClassiCraft {
 
         public void Reward( int coins, string reason = "" ) {
             Coins += coins;
-            SendMessage( "----------------------------------" );
+            //SendMessage( "----------------------------------" );
             SendMessage( "&bYou were rewarded &e" + coins + "&b coins!" );
-            if(reason != "") {
-            SendMessage( "&bReason: &e" + reason );
-            }
-            SendMessage( "&bYou now have a total of: &e" + Coins + " &bcoins!" );
-            SendMessage( "----------------------------------" );
+            //if(reason != "") {
+            //SendMessage( "&bReason: &e" + reason );
+            //}
+            //SendMessage( "&bYou now have a total of: &e" + Coins + " &bcoins!" );
+            //SendMessage( "----------------------------------" );
             Server.Log( Name + " was rewarded " + coins + " for: " + reason + "..." );
             PlayerDB.Save(this);
         }

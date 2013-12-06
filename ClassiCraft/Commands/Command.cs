@@ -20,7 +20,10 @@ namespace ClassiCraft {
             CommandList.Add( new CmdBlockRun() );
             CommandList.Add( new CmdBox() );
             CommandList.Add( new CmdCommands() );
+            CommandList.Add( new CmdCopy() );
             CommandList.Add( new CmdDelLevel() );
+            CommandList.Add( new CmdFeatures() );
+            CommandList.Add( new CmdGames() );
             CommandList.Add( new CmdGetLoc() );
             CommandList.Add( new CmdGoto() );
             CommandList.Add( new CmdHBox() );
@@ -30,14 +33,17 @@ namespace ClassiCraft {
             CommandList.Add( new CmdLevels() );
             CommandList.Add( new CmdLoad() );
             CommandList.Add( new CmdMaterials() );
+            CommandList.Add( new CmdMute() );
+            CommandList.Add( new CmdPaint() );
+            CommandList.Add( new CmdPaste() );
             CommandList.Add( new CmdPlayers() );
+            CommandList.Add( new CmdPortal() );
             CommandList.Add( new CmdRank() );
             CommandList.Add( new CmdReplace() );
             CommandList.Add( new CmdReplaceAll() );
             CommandList.Add( new CmdRanks() );
             CommandList.Add( new CmdRecordBlocks() );
             CommandList.Add( new CmdHideZones() );
-            CommandList.Add( new CmdZone() );
             CommandList.Add( new CmdShowZones() );
             CommandList.Add( new CmdRules() );
             CommandList.Add( new CmdSave() );
@@ -48,8 +54,12 @@ namespace ClassiCraft {
             CommandList.Add( new CmdSetSpawn() );
             CommandList.Add( new CmdSpawn() );
             CommandList.Add( new CmdSpleef() );
-            CommandList.Add( new CmdPortal() );
+            CommandList.Add( new CmdTitle() );
             CommandList.Add( new CmdUnban() );
+            CommandList.Add( new CmdUnload() );
+            CommandList.Add( new CmdUnmute() );
+            CommandList.Add( new CmdWhois() );
+            CommandList.Add( new CmdZone() );
         }
 
         public static Command Find( string name ) {

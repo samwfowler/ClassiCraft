@@ -26,6 +26,14 @@ namespace ClassiCraft {
                     multi = ( args.ToLower() == "true" ) ? true : false;
                 }
 
+                if ( material == Block.Air ) {
+                    material = Block.PortalAir;
+                } else if ( material == Block.Water || material == Block.Waterstill ) {
+                    material = Block.PortalWater;
+                } else if ( material == Block.Lava || material == Block.Lavastill ) {
+                    material = Block.PortalLava;
+                }
+
                 if ( material < 0 || material > 149 ) {
                     p.SendMessage( "&cMaterial \"&f" + args + "&c\" was not found." );
                     return;

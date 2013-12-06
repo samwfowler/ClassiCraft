@@ -19,16 +19,18 @@ namespace ClassiCraft {
 
         public override void Use( Player p, string args ) {
             string cmdList = "";
+            int cmdCount = 0;
 
             Command.CommandList.ForEach( delegate( Command cmd ) {
                 if ( cmd.DefaultPerm <= p.Rank.Permission ) {
-                    cmdList += Rank.GetColor(cmd.DefaultPerm) + cmd.Name.ToLower() + "  ";
+                    cmdList += " &f| " + Rank.GetColor(cmd.DefaultPerm) + cmd.Name.ToLower();
+                    cmdCount++;
                 }
             } );
 
             if ( cmdList != "" ) {
-                p.SendMessage( "Available commands:" );
-                p.SendMessage( cmdList.Substring( 0, cmdList.Length ) );
+                p.SendMessage( "Available commands (&a" + cmdCount + "&e):" );
+                p.SendMessage( cmdList.Remove(0, 5) );
             }
         }
 
