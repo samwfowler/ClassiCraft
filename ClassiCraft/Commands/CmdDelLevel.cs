@@ -33,6 +33,7 @@ namespace ClassiCraft {
 
                 Player.PlayerList.ForEach( delegate( Player pl ) {
                     if ( pl.Level == targetLevel ) {
+                        Player.GlobalDespawn( p );
                         pl.Level = Server.mainLevel;
                         pl.SendLevel();
                     }

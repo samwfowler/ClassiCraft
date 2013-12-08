@@ -86,6 +86,11 @@
     <Compile Include="Commands\CmdUnmute.cs" />
     <Compile Include="Commands\CmdUnload.cs" />
     <Compile Include="Commands\CmdFeatures.cs" />
+    <Compile Include="Commands\CmdFixGrass.cs" />
+    <Compile Include="Commands\CmdMe.cs" />
+    <Compile Include="Commands\CmdCBox.cs" />
+    <Compile Include="Commands\CmdLockLevel.cs" />
+    <Compile Include="Commands\CmdUnlockLevel.cs" />
     <Compile Include="Games\Blockrun.cs" />
     <Compile Include="Games\Spleef.cs" />
     <Compile Include="Level\PortalDB.cs" />
@@ -111,8 +116,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rank\Rank.cs" />
     <Compile Include="Server\Directories.cs" />
-    <Compile Include="Server\Server.cs" />
+    <Compile Include="Server\Heartbeat.cs" />
     <Compile Include="Level\Level.cs" />
+    <Compile Include="Server\Server.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

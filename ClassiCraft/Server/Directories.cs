@@ -18,6 +18,10 @@ namespace ClassiCraft {
                 System.IO.Directory.CreateDirectory( "ranks" );
             }
 
+            if ( !System.IO.Directory.Exists( "ranks/commands" ) ) {
+                System.IO.Directory.CreateDirectory( "ranks/commands" );
+            }
+
             if ( !System.IO.Directory.Exists( "documentation" ) ) {
                 System.IO.Directory.CreateDirectory( "documentation" );
             }

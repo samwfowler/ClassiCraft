@@ -2,28 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace ClassiCraft {
-    public class CmdGetLoc : Command {
+    public class CmdUnlockLevel : Command {
         public override string Name {
-            get { return "GetLoc"; }
+            get { return "UnlockLevel"; }
         }
 
         public override string Syntax {
-            get { return "/getloc"; }
+            get { return "/unlocklevel"; }
         }
 
         public override PermissionLevel DefaultPerm {
-            get { return PermissionLevel.Guest; }
+            get { return PermissionLevel.Operator; }
         }
 
         public override void Use( Player p, string args ) {
-            p.SendMessage( "Location: " + (p.Pos[0] / 32) + ", " + (p.Pos[1] / 32) + ", " + (p.Pos[2] / 32) );
+            p.Level.enableEditing = true;
+            Player.GlobalMessage( "Level '" + Rank.Find(p.Level.BuildPermission).Color + p.Level.Name + "&e' was &aunlocked&e." );
         }
 
         public override void Help( Player p ) {
-            p.SendMessage( "Gets your position in terms of X-Y-Z co-ordinates." );
+            p.SendMessage( "Unlocks a level." );
         }
 
     }

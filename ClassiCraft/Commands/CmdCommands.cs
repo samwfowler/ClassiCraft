@@ -21,9 +21,9 @@ namespace ClassiCraft {
             string cmdList = "";
             int cmdCount = 0;
 
-            Command.CommandList.ForEach( delegate( Command cmd ) {
-                if ( cmd.DefaultPerm <= p.Rank.Permission ) {
-                    cmdList += " &f| " + Rank.GetColor(cmd.DefaultPerm) + cmd.Name.ToLower();
+            CommandAllowance.CommandList.ForEach( delegate( CommandAllowance cmd ) {
+                if ( cmd.perm <= p.Rank.Permission ) {
+                    cmdList += " &f| " + Rank.GetColor( cmd.perm ) + cmd.cmd.Name.ToLower();
                     cmdCount++;
                 }
             } );

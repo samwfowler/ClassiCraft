@@ -10,7 +10,7 @@ namespace ClassiCraft {
             Server.Start();
 
             while ( true ) {
-                Console.Read();
+                Console.ReadLine();
             }
         }
     }

@@ -7,7 +7,7 @@ using System.Threading;
 namespace ClassiCraft {
     public class CmdSpleef : Command {
         public override string Name {
-            get { return "spleef"; }
+            get { return "Spleef"; }
         }
 
         public override string Syntax {
@@ -15,7 +15,7 @@ namespace ClassiCraft {
         }
 
         public override PermissionLevel DefaultPerm {
-            get { return PermissionLevel.Member; }
+            get { return PermissionLevel.Builder; }
         }
 
         public override void Use( Player p, string args ) {

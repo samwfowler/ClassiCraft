@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 
 namespace ClassiCraft {
-    public class CmdSay : Command {
+    public class CmdMe : Command {
         public override string Name {
-            get { return "say"; }
+            get { return "Me"; }
         }
 
         public override string Syntax {
-            get { return "/say message"; }
+            get { return "/me message"; }
         }
 
         public override PermissionLevel DefaultPerm {
@@ -23,11 +23,11 @@ namespace ClassiCraft {
                 return;
             }
 
-            Player.GlobalMessage( "&d" + args );
+            Player.GlobalMessage( p.Rank.Color + "*" + p.Name + " " + args + "*" );
         }
 
         public override void Help( Player p ) {
-            p.SendMessage( "Sends a message to the whole server." );
+            p.SendMessage( "Just try it out eh?." );
         }
 
     }

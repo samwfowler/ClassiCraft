@@ -16,6 +16,7 @@ namespace ClassiCraft {
         public static int maxPlayers = 32;
         public static bool isPublic = true;
         public static bool verifyPlayers = false;
+        public static bool useDefaultPerm = false;
 
         public static void LoadConfig() {
             if ( File.Exists( ConfigFile ) ) {
@@ -47,6 +48,9 @@ namespace ClassiCraft {
                                 case "verifyplayers":
                                     verifyPlayers = bool.Parse( value );
                                     break;
+                                case "usedefaultperm":
+                                    useDefaultPerm = bool.Parse( value );
+                                    break;
                             }
                         } else {
                             Server.Log( "Invalid line in config: " + line );
@@ -69,6 +73,7 @@ namespace ClassiCraft {
             sw.WriteLine( "maxPlayers = " + maxPlayers );
             sw.WriteLine( "isPublic = " + isPublic.ToString().ToLower() );
             sw.WriteLine( "verifyPlayers = " + verifyPlayers.ToString().ToLower() );
+            sw.WriteLine( "useDefaultPerm = " + useDefaultPerm.ToString().ToLower() );
             sw.Flush();
             sw.Close();
             sw.Dispose();

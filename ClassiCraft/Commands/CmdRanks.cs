@@ -21,7 +21,7 @@ namespace ClassiCraft {
             p.SendMessage("Available ranks:");
 
             Rank.RankList.ForEach( delegate( Rank r ) {
-                p.SendMessage( r.Color + r.Name + " &c- " + r.Permission.GetHashCode().ToString() );
+                p.SendMessage( r.Color + r.Name + " &b- DrawLimit: " + r.DrawLimit + " &c- Permission: " + r.Permission.GetHashCode().ToString() );
             } );
         }
 

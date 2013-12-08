@@ -20,7 +20,6 @@ namespace ClassiCraft {
         public override void Use( Player p, string args ) {
             if ( args != "" ) {
                 material = Block.Byte( args );
-                p.SendMessage( "MATERIAL \"" + Block.Name( Block.Byte( args ) ) + "\" was found! :D" );
                 if ( material < 0 || material > 49 ) {
                     p.SendMessage( "&cMaterial \"&f" + args + "&c\" was not found." );
                     return;
@@ -86,6 +85,11 @@ namespace ClassiCraft {
                         }
                     }
                 }
+            }
+
+            if ( p.Rank.DrawLimit < buffer.Count ) {
+                p.SendMessage( "&cDesired /Box exceeds rank's DrawLimit of " + p.Rank.DrawLimit + "." );
+                return;
             }
 
             foreach ( BufferPos bpos in buffer ) {

@@ -14,7 +14,7 @@ namespace ClassiCraft {
         }
 
         public override PermissionLevel DefaultPerm {
-            get { return PermissionLevel.Architect; }
+            get { return PermissionLevel.AdvBuilder; }
         }
 
         public override void Use( Player p, string args ) {
@@ -53,6 +53,11 @@ namespace ClassiCraft {
                         }
                     }
                 }
+            }
+
+            if ( p.Rank.DrawLimit < buffer.Count ) {
+                p.SendMessage( "&cDesired /ReplaceAll exceeds rank's DrawLimit of " + p.Rank.DrawLimit + "." );
+                return;
             }
 
             foreach ( BufferPos bpos in buffer ) {

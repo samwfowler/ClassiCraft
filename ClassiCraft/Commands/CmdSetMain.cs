@@ -14,7 +14,7 @@ namespace ClassiCraft {
         }
 
         public override PermissionLevel DefaultPerm {
-            get { return PermissionLevel.Administrator; }
+            get { return PermissionLevel.SuperOp; }
         }
 
         public override void Use( Player p, string args ) {

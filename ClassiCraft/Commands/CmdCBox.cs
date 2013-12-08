@@ -4,23 +4,29 @@ using System.Linq;
 using System.Text;
 
 namespace ClassiCraft {
-    public class CmdReplace : Command {
+    public class CmdCBox : Command {
         public override string Name {
-            get { return "Replace"; }
+            get { return "CBox"; }
         }
 
         public override string Syntax {
-            get { return "/replace [material] [material]"; }
+            get { return "/cbox [material1] [material2]"; }
         }
 
         public override PermissionLevel DefaultPerm {
-            get { return PermissionLevel.AdvBuilder; }
+            get { return PermissionLevel.Builder; }
         }
 
         public override void Use( Player p, string args ) {
             if ( args != "" ) {
-                material1 = Block.Byte( args.Split(' ')[0] );
-                if ( material1 < 0 || material1 > 49 ) {
+                if ( args.Split( ' ' ).Length < 2 ) {
+                    p.SendMessage( "&cPlease type in 2 materials." );
+                    return;
+                }
+
+                material1 = Block.Byte( args.Split( ' ' )[0] );
+                material2 = Block.Byte( args.Split( ' ' )[1] );
+                if ( material1 < 0 || material1 > 49 || material2 < 0 || material2 > 49 ) {
                     p.SendMessage( "&cMaterial \"&f" + args + "&c\" was not found." );
                     return;
                 }
@@ -28,20 +34,12 @@ namespace ClassiCraft {
                 usecurrentmaterial = true;
             }
 
-            if ( args != "" ) {
-                material2 = Block.Byte( args.Split( ' ' )[1] );
-                if ( material1 < 0 || material1 > 49 ) {
-                    p.SendMessage( "&cMaterial \"&f" + args + "&c\" was not found." );
-                    return;
-                }
-            }
-
             if ( p.Level.BuildPermission > p.Rank.Permission ) {
                 p.SendMessage( "&cYou aren't permitted to build here." );
                 return;
             }
 
-            p.SendMessage( "&cReplace: &ePlace a block at the first corner." );
+            p.SendMessage( "&cCBox: &ePlace a block at the first corner." );
             p.OnBlockChange += Blockchange1;
         }
 
@@ -61,7 +59,7 @@ namespace ClassiCraft {
             y1 = y;
             z1 = z;
 
-            p.SendMessage( "&cReplace: &ePlace a block at the second corner." );
+            p.SendMessage( "&cCBox: &ePlace a block at the second corner." );
             p.OnBlockChange += Blockchange2;
         }
 
@@ -72,6 +70,7 @@ namespace ClassiCraft {
 
             if ( usecurrentmaterial ) {
                 material1 = type;
+                material2 = Block.Air;
             }
 
             ushort MinX = Math.Min( x1, x2 );
@@ -83,22 +82,26 @@ namespace ClassiCraft {
             ushort MinZ = Math.Min( z1, z2 );
             ushort MaxZ = Math.Max( z1, z2 );
             ushort ZDiff = (ushort)(MaxZ - MinZ + 1);
+            bool even = true;
 
             List<BufferPos> buffer = new List<BufferPos>();
 
             for ( ushort x = MinX; x <= MaxX; x++ ) {
                 for ( ushort y = MinY; y <= MaxY; y++ ) {
                     for ( ushort z = MinZ; z <= MaxZ; z++ ) {
-                        byte currBlock = p.Level.GetBlock(x, y, z);
-                        if ( currBlock == material1 ) {
+                        if ( even ) {
+                            buffer.Add( new BufferPos( x, y, z, material1 ) );
+                        } else {
                             buffer.Add( new BufferPos( x, y, z, material2 ) );
                         }
+                        even = !even;
                     }
                 }
+                even = !even;
             }
 
             if ( p.Rank.DrawLimit < buffer.Count ) {
-                p.SendMessage( "&cDesired /Replace exceeds rank's DrawLimit of " + p.Rank.DrawLimit + "." );
+                p.SendMessage( "&cDesired /CBox exceeds rank's DrawLimit of " + p.Rank.DrawLimit + "." );
                 return;
             }
 
@@ -106,11 +109,11 @@ namespace ClassiCraft {
                 p.Level.Blockchange( p, bpos.X, bpos.Y, bpos.Z, bpos.Type );
             }
 
-            p.SendMessage( "&cReplace: &eReplaced " + Block.Name(material1) + " with " + Block.Name(material2) + ", modified " + buffer.Count + " blocks. (" + XDiff + "x" + YDiff + "x" + ZDiff + ")" );
+            p.SendMessage( "&cCBox: &eCBox drawn, modified " + buffer.Count + " blocks. (" + XDiff + "x" + YDiff + "x" + ZDiff + ")" );
         }
 
         public override void Help( Player p ) {
-            p.SendMessage( "Replaces one material with another in a specified region." );
+            p.SendMessage( "Draws a checkered box between two points." );
         }
     }
 }

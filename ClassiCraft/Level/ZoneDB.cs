@@ -44,7 +44,7 @@ namespace ClassiCraft {
                     z.y1 + " : " + 
                     z.y2 + " : " + 
                     z.z1 + " : " + 
-                    z.z2 + " : " + 
+                    z.z2 + " : " +
                     z.Permission.GetHashCode() );
             }
             sw.Flush();

@@ -189,6 +189,7 @@ namespace ClassiCraft {
                 gs.Write( header, 0, header.Length );
                 gs.Write( Blocks, 0, Blocks.Length );
                 gs.Close();
+                fs.Close();
 
                 Server.Log( "Saved level \"" + Name + "\" to " + Name.ToLower() + ".lvl..." );
                 hasChanged = false;
@@ -211,12 +212,10 @@ namespace ClassiCraft {
 
     public enum PermissionLevel {
         Guest = 0,
-        Member = 10,
         Builder = 20,
-        Architect = 40,
+        AdvBuilder = 40,
         Operator = 80,
-        Administrator = 160,
-        Owner = 320,
-        Overlord = 65535
+        SuperOp = 160,
+        Owner = 320
     }
 }

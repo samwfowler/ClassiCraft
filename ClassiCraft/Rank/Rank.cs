@@ -13,6 +13,7 @@ namespace ClassiCraft {
         public string Color;
         public string CommandsFile;
         public bool CanBreakBedrock;
+        public int DrawLimit;
         public PermissionLevel Permission;
         public CommandList Commands;
 
@@ -22,6 +23,7 @@ namespace ClassiCraft {
             Name = name;
             Color = color;
             CanBreakBedrock = canbreakbedrock;
+            DrawLimit = permission.GetHashCode() * 100;
             Permission = permission;
             CommandsFile = Name + "_commands.txt";
             Commands = new CommandList();
@@ -51,6 +53,10 @@ namespace ClassiCraft {
                                     rank.CanBreakBedrock = ( value == "true" ) ? true : false;
                                     stage++;
                                     break;
+                                case "drawlimit":
+                                    rank.DrawLimit = int.Parse( value );
+                                    stage++;
+                                    break;
                                 case "permission":
                                     rank.Permission = (PermissionLevel)int.Parse( value );
                                     stage++;
@@ -61,23 +67,25 @@ namespace ClassiCraft {
                                     break;
                             }
 
-                            if ( stage >= 5 ) {
-                                RankList.Add( new Rank( rank.Name, rank.Color, rank.Permission, rank.CanBreakBedrock ) );
+                            if ( stage >= 6 ) {
+                                Rank newRank = new Rank( rank.Name, rank.Color, rank.Permission, rank.CanBreakBedrock );
+                                RankList.Add( newRank );
+                                newRank.LoadCommands();
                             }
-                        } catch {
+                        } catch(Exception e) {
                             Server.Log( "Invalid line: " + line );
+                            Server.Log( e.ToString() );
                         }
                     }
                 }
             }
 
-            if ( RankList.Find( grp => grp.Permission == PermissionLevel.Guest ) == null ) { RankList.Add( new Rank( "Guest", "&f", PermissionLevel.Guest ) ); }
-            if ( RankList.Find( grp => grp.Permission == PermissionLevel.Member ) == null ) { RankList.Add( new Rank( "Member", "&b", PermissionLevel.Member ) ); }
-            if ( RankList.Find( grp => grp.Permission == PermissionLevel.Builder ) == null ) { RankList.Add( new Rank( "Builder", "&e", PermissionLevel.Builder ) ); }
-            if ( RankList.Find( grp => grp.Permission == PermissionLevel.Architect ) == null ) { RankList.Add( new Rank( "Architect", "&6", PermissionLevel.Architect ) ); }
+            if ( RankList.Find( grp => grp.Permission == PermissionLevel.Guest ) == null ) { RankList.Add( new Rank( "Guest", "&7", PermissionLevel.Guest ) ); }
+            if ( RankList.Find( grp => grp.Permission == PermissionLevel.Builder ) == null ) { RankList.Add( new Rank( "Builder", "&2", PermissionLevel.Builder ) ); }
+            if ( RankList.Find( grp => grp.Permission == PermissionLevel.AdvBuilder ) == null ) { RankList.Add( new Rank( "AdvBuilder", "&3", PermissionLevel.AdvBuilder ) ); }
             if ( RankList.Find( grp => grp.Permission == PermissionLevel.Operator ) == null ) { RankList.Add( new Rank( "Operator", "&c", PermissionLevel.Operator ) ); }
-            if ( RankList.Find( grp => grp.Permission == PermissionLevel.Administrator ) == null ) { RankList.Add( new Rank( "Administrator", "&4", PermissionLevel.Administrator, true ) ); }
-            if ( RankList.Find( grp => grp.Permission == PermissionLevel.Owner ) == null ) { RankList.Add( new Rank( "Owner", "&8", PermissionLevel.Owner, true ) ); }
+            if ( RankList.Find( grp => grp.Permission == PermissionLevel.SuperOp ) == null ) { RankList.Add( new Rank( "SuperOp", "&e", PermissionLevel.SuperOp, true ) ); }
+            if ( RankList.Find( grp => grp.Permission == PermissionLevel.Owner ) == null ) { RankList.Add( new Rank( "Owner", "&4", PermissionLevel.Owner, true ) ); }
 
             SaveRanks();
             Server.Log( "Loaded ranks..." );
@@ -89,7 +97,8 @@ namespace ClassiCraft {
                 sw.WriteLine( "Name = " + rnk.Name );
                 sw.WriteLine( "Color = " + rnk.Color );
                 sw.WriteLine( "CanBreakBedrock = " + rnk.CanBreakBedrock.ToString().ToLower() );
-                sw.WriteLine( "Permission = " + rnk.Permission.GetHashCode().ToString() );
+                sw.WriteLine( "DrawLimit = " + rnk.DrawLimit );
+                sw.WriteLine( "Permission = " + rnk.Permission.GetHashCode() );
                 sw.WriteLine( "CommandsFile = " + rnk.CommandsFile );
                 sw.WriteLine();
             }
@@ -100,26 +109,12 @@ namespace ClassiCraft {
             Server.Log( "Saved ranks..." );
         }
 
-        public void FillCommands() {
-            Commands = new CommandList();
-
-            foreach ( Command cmd in Command.CommandList ) {
-                if ( cmd.DefaultPerm <= Permission ) {
-                    Commands.Add( cmd );
+        public void LoadCommands() {
+            foreach ( CommandAllowance ca in CommandAllowance.CommandList ) {
+                if ( ca.perm <= Permission ) {
+                    Commands.Add( ca.cmd );
                 }
             }
-
-            SaveCommands();
-        }
-
-        public void SaveCommands() {
-            StreamWriter sw = new StreamWriter( File.Create( CommandsFile ) );
-            foreach ( Command cmd in Commands.Commands ) {
-                sw.WriteLine( cmd.Name );
-            }
-            sw.Flush();
-            sw.Close();
-            sw.Dispose();
         }
 
         public static Rank Find( string name ) {
@@ -132,22 +127,61 @@ namespace ClassiCraft {
         }
 
         public static Rank Find( PermissionLevel perm ) {
-            retry:
             foreach ( Rank r in RankList ) {
-                if ( r.Permission <= perm ) {
+                if ( r.Permission == perm ) {
                     return r;
                 }
             }
             return null;
         }
 
-        public static string GetColor( PermissionLevel perm ) {
+        public static Rank RoundDown( PermissionLevel perm ) {
+            int permy = perm.GetHashCode();
             retry:
+            foreach ( Rank r in RankList ) {
+                if ( r.Permission == (PermissionLevel)permy ) {
+                    return r;
+                }
+            }
+
+            if ( RankList[0].Permission < (PermissionLevel)permy ) {
+                permy = permy - 1;
+                goto retry;
+            } else {
+                return null;
+            }
+        }
+
+        public static Rank RoundUp( PermissionLevel perm ) {
+            int permy = perm.GetHashCode();
+        retry:
+            foreach ( Rank r in RankList ) {
+                if ( r.Permission == (PermissionLevel)permy ) {
+                    return r;
+                }
+            }
+
+            if ( RankList[RankList.Count - 1].Permission > (PermissionLevel)permy ) {
+                permy = permy + 1;
+                goto retry;
+            } else {
+                return null;
+            }
+        }
+
+        public static string GetColor( PermissionLevel perm ) {
             foreach ( Rank rnk in Rank.RankList ) {
                 if ( rnk.Permission == perm ) {
                     return rnk.Color;
                 }
             }
+
+            if ( RoundDown( perm ) != null ) {
+                return RoundDown( perm ).Color;
+            } else if ( RoundUp( perm ) != null ) {
+                return RoundUp( perm ).Color;
+            }
+
             return null;
         }
     }

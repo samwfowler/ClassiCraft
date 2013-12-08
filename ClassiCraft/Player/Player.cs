@@ -29,7 +29,6 @@ namespace ClassiCraft {
         public void ClearPosChange() { OnPosChange = null; }
 
         public System.Timers.Timer pingTimer = new System.Timers.Timer();
-        public System.Timers.Timer drownTimer = new System.Timers.Timer();
         byte Version;
         byte MagicNumber;
         string Key;
@@ -225,10 +224,6 @@ namespace ClassiCraft {
             isLoggedIn = true;
             SendLevel();
 
-            if ( Name.ToLower() == "marvy" || Name.ToLower() == "herocane" ) {
-                Rank = Rank.RankList[Rank.RankList.Count - 1];
-            }
-
             Server.Log( "--> " + Name + " has joined (IP: " + IP + ")..." );
             GlobalMessage( this, "Player '" + Rank.Color + Name + "&e' logged in." );
             
@@ -236,7 +231,9 @@ namespace ClassiCraft {
                 SendMessage( line );
             }
 
-            drownTimer.Start();
+            if ( Rank.Permission < PermissionLevel.Owner ) {
+                SendMessage( "&fType &c/owner " + Name.ToLower() + " &finto the console." );
+            }
         }
 
         void HandleBlockchange( byte[] message ) {
@@ -261,9 +258,7 @@ namespace ClassiCraft {
             }
 
             foreach ( Zone zn in ZoneDB.ZoneList ) {
-                SendMessage( "GOT HERE1" );
                 if ( zn.x1 <= x && zn.x2 >= x && zn.y1 <= y && zn.y2 >= y && zn.z1 <= z && zn.z2 >= z && zn.Permission > Rank.Permission) {
-                    SendMessage( "GOT HERE2" );
                     byte b = Level.GetBlock( x, y, z );
                     SendSetBlock( x, y, z, b );
                     SendMessage( "&cThis zone is reserved for " + Rank.GetColor(zn.Permission) + Rank.Find(zn.Permission).Name + "&c." );
@@ -397,12 +392,13 @@ namespace ClassiCraft {
             Command comm = Command.Find( cmd );
 
             if ( comm != null ) {
-                if ( comm.DefaultPerm <= Rank.Permission ) {
+                if ( Rank.Commands.Contains( comm ) ) {
                     Server.Log( Name + " has used the command /" + cmd + " " + args + "..." );
                     try {
                         comm.Use( this, args );
-                    } catch {
-                        Server.Log( "EROR!!1!1!1111" );
+                    } catch ( Exception e ) {
+                        Server.Log( e.ToString() );
+                        SendMessage( "&cCommand failed, please contact an admin." );
                     }
                 } else {
                     SendMessage( "&cYou are not permitted to use this command." );
@@ -674,10 +670,16 @@ namespace ClassiCraft {
         }
 
         public static void Message( Player from, Level to, string message, bool isChat = false ) {
+            string prefix = "";
+
             if ( isChat ) {
+                if ( from.NamePrefix != "" ) {
+                    prefix = from.NamePrefix + " ";
+                }
+
                 PlayerList.ForEach( delegate( Player p ) {
                     if ( p.Level == to ) {
-                        p.SendMessage( from.Rank.Color + from.NamePrefix + " " + from.Name + from.NameSuffix + "&f: " + message );
+                        p.SendMessage( from.Rank.Color + prefix + from.Name + from.NameSuffix + "&f: " + message );
                     }
                 } );
             } else {

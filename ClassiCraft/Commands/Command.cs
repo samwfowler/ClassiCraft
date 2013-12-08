@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace ClassiCraft {
     public abstract class Command {
@@ -19,10 +20,12 @@ namespace ClassiCraft {
             CommandList.Add( new CmdBanned() );
             CommandList.Add( new CmdBlockRun() );
             CommandList.Add( new CmdBox() );
+            CommandList.Add( new CmdCBox() );
             CommandList.Add( new CmdCommands() );
             CommandList.Add( new CmdCopy() );
             CommandList.Add( new CmdDelLevel() );
             CommandList.Add( new CmdFeatures() );
+            CommandList.Add( new CmdFixGrass() );
             CommandList.Add( new CmdGames() );
             CommandList.Add( new CmdGetLoc() );
             CommandList.Add( new CmdGoto() );
@@ -32,7 +35,9 @@ namespace ClassiCraft {
             CommandList.Add( new CmdKick() );
             CommandList.Add( new CmdLevels() );
             CommandList.Add( new CmdLoad() );
+            CommandList.Add( new CmdLockLevel() );
             CommandList.Add( new CmdMaterials() );
+            CommandList.Add( new CmdMe() );
             CommandList.Add( new CmdMute() );
             CommandList.Add( new CmdPaint() );
             CommandList.Add( new CmdPaste() );
@@ -57,6 +62,7 @@ namespace ClassiCraft {
             CommandList.Add( new CmdTitle() );
             CommandList.Add( new CmdUnban() );
             CommandList.Add( new CmdUnload() );
+            CommandList.Add( new CmdUnlockLevel() );
             CommandList.Add( new CmdUnmute() );
             CommandList.Add( new CmdWhois() );
             CommandList.Add( new CmdZone() );
@@ -69,6 +75,51 @@ namespace ClassiCraft {
                 }
             }
             return null;
+        }
+    }
+
+    public class CommandAllowance {
+        public static List<CommandAllowance> CommandList = new List<CommandAllowance>();
+        public PermissionLevel perm;
+        public Command cmd;
+
+        public CommandAllowance( Command c, PermissionLevel p ) {
+            perm = p;
+            cmd = c;
+        }
+
+        public static void LoadCommands() {
+            if ( File.Exists( "commandallowances.txt" ) ) {
+                CommandAllowance newCA;
+                foreach ( string line in File.ReadAllLines( "commandallowances.txt" ) ) {
+                    Command newCmd = Command.Find( line.Split( ':' )[0].Trim() );
+                    PermissionLevel newPerm = (PermissionLevel)int.Parse( line.Split( ':' )[1].Trim() );
+                    newCA = new CommandAllowance( newCmd, newPerm );
+
+                    if ( newCmd != null ) {
+                        CommandList.Add( newCA );
+                    } else {
+                        Server.Log( "Invalid command allowance \"" + line + "\" (Command could not be found)..." );
+                    }
+                }
+            } else {
+                foreach ( Command cmd in Command.CommandList ) {
+                    CommandAllowance newCA = new CommandAllowance( cmd, cmd.DefaultPerm );
+                    CommandList.Add( newCA );
+                }
+
+                SaveCommands();
+            }
+        }
+
+        public static void SaveCommands() {
+            StreamWriter sw = new StreamWriter( File.Create( "commandallowances.txt" ) );
+            foreach ( CommandAllowance ca in CommandList ) {
+                sw.WriteLine( ca.cmd.Name + " : " + ca.perm.GetHashCode() );
+            }
+            sw.Flush();
+            sw.Close();
+            sw.Dispose();
         }
     }
 

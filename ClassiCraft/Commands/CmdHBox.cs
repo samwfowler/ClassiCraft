@@ -89,6 +89,11 @@ namespace ClassiCraft {
                 }
             }
 
+            if ( p.Rank.DrawLimit < buffer.Count ) {
+                p.SendMessage( "&cDesired /HBox exceeds rank's DrawLimit of " + p.Rank.DrawLimit + "." );
+                return;
+            }
+
             foreach ( BufferPos bpos in buffer ) {
                 p.Level.Blockchange( p, bpos.X, bpos.Y, bpos.Z, bpos.Type );
             }
