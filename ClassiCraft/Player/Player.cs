@@ -69,7 +69,7 @@ namespace ClassiCraft {
                 Bindings[i] = i;
             }
 
-            socket.BeginReceive( tempBuffer, 0, tempBuffer.Length, SocketFlags.None, new AsyncCallback( recievePlayer ), this );
+            Socket.BeginReceive( tempBuffer, 0, tempBuffer.Length, SocketFlags.None, new AsyncCallback( recievePlayer ), this );
 
             pingTimer.Interval = 500;
             pingTimer.Elapsed += delegate {
@@ -133,8 +133,10 @@ namespace ClassiCraft {
                             goto default;
                         length = 65;
                         break;
+                    case 16:
+                        length = 67;
+                        break;
                     default:
-                        SendKick( "Unhandled message ID" );
                         return new byte[0];
                 }
 
@@ -165,6 +167,12 @@ namespace ClassiCraft {
                             if ( !isLoggedIn )
                                 break;
                             HandleChat( message );
+                            break;
+                        case 16:
+                            HandleExtInfo( message );
+                            break;
+                        case 17:
+                            HandleExtEntry( message );
                             break;
                     }
 
@@ -215,24 +223,38 @@ namespace ClassiCraft {
             }
 
             if ( MagicNumber == 66 ) {
+                isCPECapable = true;
                 NameSuffix = "+";
+                SendExtInfo(4);
+
+                SendExtEntry( "ClickDistance", 1 );
+                SendExtEntry( "CustomBlocks", 1 );
+                SendExtEntry( "MessageTypes", 1 );
+                short ClickDistance;
+                
+                unchecked {
+                    ClickDistance = 0;
+                }
+
+                SendClickDistance( ClickDistance );
+                SendCustomBlockSupportLevel( 1 );
+
+                Thread.Sleep( 1000 );
             }
 
             ID = GetID();
             PlayerDB.Load( this );
+            Rank = Rank.RankList[0];
             PlayerList.Add( this );
             isLoggedIn = true;
             SendLevel();
 
             Server.Log( "--> " + Name + " has joined (IP: " + IP + ")..." );
             GlobalMessage( this, "Player '" + Rank.Color + Name + "&e' logged in." );
+            GlobalAnnouncement( Name + " joined!" );
             
             foreach ( string line in Server.welcomeMessage ) {
                 SendMessage( line );
-            }
-
-            if ( Rank.Permission < PermissionLevel.Owner ) {
-                SendMessage( "&fType &c/owner " + Name.ToLower() + " &finto the console." );
             }
         }
 
@@ -408,6 +430,17 @@ namespace ClassiCraft {
             }
         }
 
+        void HandleExtInfo( byte[] message ) {
+            string appName = enc.GetString( message, 0, 64 );
+            byte extCount = message[65];
+
+            Server.Log( appName.Trim() + " extCount: " + extCount );
+        }
+
+        void HandleExtEntry( byte[] message ) {
+            Server.Log( "RECIEVED EXTENTRY!!!" );
+        }
+
         #region Outgoing
 
         public void SendPacket( Packet p ) {
@@ -449,8 +482,11 @@ namespace ClassiCraft {
 
         public void SendLevel() {
             SendServerIdentification();
+            Thread.Sleep( 100 );
             SendLevelInitialize();
+            Thread.Sleep( 100 );
             SendLevelDataChunk();
+            Thread.Sleep( 100 );
             SendLevelFinalize();
 
             Player.GlobalSpawn( this,
@@ -549,6 +585,53 @@ namespace ClassiCraft {
 
         public void SendKick( string reason ) {
             SendPacket( Packet.DisconnectPlayer, StringFormat(reason, 64) );
+        }
+
+        public void SendExtInfo(short extCount) {
+            byte[] extData = new byte[66];
+            Encoding.ASCII.GetBytes( "ClassiCraft 1.0".PadRight( 64 ), 0, 64, extData, 0 );
+            ToNetOrder( extCount, extData, 64 );
+            SendPacket( Packet.ExtInfo, extData );
+        }
+
+        public void SendExtEntry(string extension, short version) {
+            byte[] extData = new byte[68];
+            Encoding.ASCII.GetBytes( extension.PadRight( 64 ), 0, 64, extData, 0 );
+            ToNetOrder( version, extData, 64 );
+            SendPacket( Packet.ExtEntry, extData );
+        }
+
+        public void SendClickDistance( short distance ) {
+            byte[] clickData = new byte[2];
+            ToNetOrder( distance, clickData, 0 );
+            SendPacket( Packet.ClickDistance, clickData );
+        }
+
+        public void SendCustomBlockSupportLevel(byte level) {
+            byte[] levelData = new byte[1];
+            levelData[0] = level;
+            SendPacket( Packet.CustomBlockSupportLevel, levelData );
+        }
+
+        public void SendEnvSetWeatherType( byte weatherType ) {
+            byte[] weatherData = new byte[1];
+            weatherData[0] = weatherType;
+            SendPacket( Packet.EnvSetWeatherType, weatherData );
+        }
+
+        static void ToNetOrder( short number, byte[] arr, int offset ) {
+            if ( arr == null ) throw new ArgumentNullException( "arr" );
+            arr[offset] = (byte)( ( number & 0xff00 ) >> 8 );
+            arr[offset + 1] = (byte)( number & 0x00ff );
+        }
+
+
+        static void ToNetOrder( int number, byte[] arr, int offset ) {
+            if ( arr == null ) throw new ArgumentNullException( "arr" );
+            arr[offset] = (byte)( ( number & 0xff000000 ) >> 24 );
+            arr[offset + 1] = (byte)( ( number & 0x00ff0000 ) >> 16 );
+            arr[offset + 2] = (byte)( ( number & 0x0000ff00 ) >> 8 );
+            arr[offset + 3] = (byte)( number & 0x000000ff );
         }
 
         void UpdatePosition() {
@@ -663,6 +746,14 @@ namespace ClassiCraft {
                     p.SendMessage( message );
                 } );
             }
+        }
+
+        public static void GlobalAnnouncement( string message ) {
+            Player.PlayerList.ForEach( delegate( Player p ) {
+                if ( p.isCPECapable ) {
+                    p.SendMessage( 100, message );
+                }
+            } );
         }
 
         public static void Message( Level to, string message ) {
@@ -864,7 +955,9 @@ namespace ClassiCraft {
         #region Host <> Network
 
         byte[] HostToNetworkOrder( ushort x ) {
-            byte[] y = BitConverter.GetBytes( x ); Array.Reverse( y ); return y;
+            byte[] y = BitConverter.GetBytes( x ); 
+            Array.Reverse( y ); 
+            return y;
         }
 
         ushort NetworkToHostOrder( byte[] x, int offset ) {
@@ -874,7 +967,9 @@ namespace ClassiCraft {
         }
 
         byte[] HostToNetworkOrder( short x ) {
-            byte[] y = BitConverter.GetBytes( x ); Array.Reverse( y ); return y;
+            byte[] y = BitConverter.GetBytes( x ); 
+            Array.Reverse( y ); 
+            return y;
         }
 
         public static byte[] GZip( byte[] bytes ) {

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace ClassiCraft {
     public enum Packet {
+        // Standard Protocol
         ServerIdentification = 0x00,
         Ping = 0x01,
         LevelInitialize = 0x02,
@@ -21,9 +22,23 @@ namespace ClassiCraft {
         DisconnectPlayer = 0x0e,
         UpdateUserType = 0x0f,
 
-        // CPE
-
+        // Protocol Extension
         ExtInfo = 0x10,
-        ExtEntry = 0x11
+        ExtEntry = 0x11,
+        ClickDistance = 0x12,
+        CustomBlockSupportLevel = 0x13,
+        HeldBlock = 0x14,
+        SetTextHotKey = 0x15,
+        ExtAddPlayerName = 0x16,
+        ExtAddEntity = 0x17,
+        ExtRemovePlayerName = 0x18,
+        EnvColors = 0x19,
+        MakeSelection = 0x1A,
+        RemoveSelection = 0x1B,
+        BlockPermissions = 0x1C,
+        ChangeModel = 0x1D,
+        EnvMapAppearance = 0x1E,
+        EnvSetWeatherType = 0x1F,
+        HackControl = 0x20
     }
 }

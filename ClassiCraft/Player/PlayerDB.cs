@@ -9,6 +9,8 @@ namespace ClassiCraft {
         public static void Load( Player p ) {
             if ( !File.Exists( "players/" + p.Name + ".db" ) ) {
                 p.Rank = Rank.RankList[0];
+                p.NamePrefix = "";
+                p.Coins = 0;
                 Save( p );
                 return;
             }

@@ -50,8 +50,7 @@ namespace ClassiCraft {
                                 if ( newUri != uri ) {
                                     File.WriteAllText( UrlFileName, newUri.ToString() );
                                     uri = newUri;
-                                    Server.Log( "Url recieved: ");
-                                    Server.Log( uri.ToString() );
+                                    Server.Log( "URL: " + uri.ToString() );
                                     Server.Log( "Url also saved to " + UrlFileName + "..." );
                                 }
                             }

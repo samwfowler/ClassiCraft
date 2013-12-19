@@ -58,26 +58,8 @@ namespace ClassiCraft {
 
         // Portals
         public const byte PortalAir = (byte)100;
-        public const byte PortalRock = (byte)101;
-        public const byte PortalGrass = (byte)102;
-        public const byte PortalDirt = (byte)103;
-        public const byte PortalStone = (byte)104;
-        public const byte PortalWood = (byte)105;
-        public const byte PortalShrub = (byte)106;
-        public const byte PortalBlackrock = (byte)107;
         public const byte PortalWater = (byte)108;
-        public const byte PortalWaterstill = (byte)109;
         public const byte PortalLava = (byte)110;
-        public const byte PortalLavastill = (byte)111;
-        public const byte PortalSand = (byte)112;
-        public const byte PortalGravel = (byte)113;
-        public const byte PortalGoldrock = (byte)114;
-        public const byte PortalIronrock = (byte)115;
-        public const byte PortalCoal = (byte)116;
-        public const byte PortalTrunk = (byte)117;
-        public const byte PortalLeaf = (byte)118;
-        public const byte PortalSponge = (byte)119;
-        public const byte PortalGlass = (byte)120;
         public const byte PortalRed = (byte)121;
         public const byte PortalOrange = (byte)122;
         public const byte PortalYellow = (byte)123;
@@ -94,19 +76,6 @@ namespace ClassiCraft {
         public const byte PortalDarkgrey = (byte)134;
         public const byte PortalLightgrey = (byte)135;
         public const byte PortalWhite = (byte)136;
-        public const byte PortalYellowflower = (byte)137;
-        public const byte PortalRedflower = (byte)138;
-        public const byte PortalMushroom = (byte)139;
-        public const byte PortalRedmushroom = (byte)140;
-        public const byte PortalGoldsolid = (byte)141;
-        public const byte PortalIron = (byte)142;
-        public const byte PortalStaircasefull = (byte)143;
-        public const byte PortalStaircasestep = (byte)144;
-        public const byte PortalBrick = (byte)145;
-        public const byte PortalTnt = (byte)146;
-        public const byte PortalBookcase = (byte)147;
-        public const byte PortalStonevine = (byte)148;
-        public const byte PortalObsidian = (byte)149;
 
         public static byte Random() {
             Random rnd = new Random();
@@ -168,26 +137,8 @@ namespace ClassiCraft {
 
                 // Portals
                 case 100: return "PortalAir";
-                case 101: return "PortalRock";
-                case 102: return "PortalGrass";
-                case 103: return "PortalDirt";
-                case 104: return "PortalStone";
-                case 105: return "PortalWood";
-                case 106: return "PortalShrub";
-                case 107: return "PortalBlackrock";
                 case 108: return "PortalWater";
-                case 109: return "PortalWaterstill";
                 case 110: return "PortalLava";
-                case 111: return "PortalLavastill";
-                case 112: return "PortalSand";
-                case 113: return "PortalGravel";
-                case 114: return "PortalGoldrock";
-                case 115: return "PortalIronrock";
-                case 116: return "PortalCoal";
-                case 117: return "PortalTrunk";
-                case 118: return "PortalLeaf";
-                case 119: return "PortalSponge";
-                case 120: return "PortalGlass";
                 case 121: return "PortalRed";
                 case 122: return "PortalOrange";
                 case 123: return "PortalYellow";
@@ -204,19 +155,6 @@ namespace ClassiCraft {
                 case 134: return "PortalDarkgray";
                 case 135: return "PortalGray";
                 case 136: return "PortalWhite";
-                case 137: return "PortalYellowflower";
-                case 138: return "PortalRedflower";
-                case 139: return "PortalMushroom";
-                case 140: return "PortalRedmushroom";
-                case 141: return "PortalGold";
-                case 142: return "PortalIron";
-                case 143: return "PortalStaircasefull";
-                case 144: return "PortalStaircasestep";
-                case 145: return "PortalBrick";
-                case 146: return "PortalTnt";
-                case 147: return "PortalBookcase";
-                case 148: return "PortalStonevine";
-                case 149: return "PortalObsidian";
                 default: return null;
             }
         }
@@ -276,26 +214,8 @@ namespace ClassiCraft {
 
                 // Portals
                 case "portalair": return (byte)100;
-                case "portalrock": return (byte)101;
-                case "portalgrass": return (byte)102;
-                case "portaldirt": return (byte)103;
-                case "portalstone": return (byte)104;
-                case "portalwood": return (byte)105;
-                case "portalshrub": return (byte)106;
-                case "portalblackrock": return (byte)107;
                 case "portalwater": return (byte)108;
-                case "portalwaterstill": return (byte)109;
                 case "portallava": return (byte)110;
-                case "portallavastill": return (byte)111;
-                case "portalsand": return (byte)112;
-                case "portalgravel": return (byte)113;
-                case "portalgoldrock": return (byte)114;
-                case "portalironrock": return (byte)115;
-                case "portalcoal": return (byte)116;
-                case "portaltrunk": return (byte)117;
-                case "portalleaf": return (byte)118;
-                case "portalsponge": return (byte)119;
-                case "portalglass": return (byte)120;
                 case "portalred": return (byte)121;
                 case "portalorange": return (byte)122;
                 case "portalyellow": return (byte)123;
@@ -312,19 +232,6 @@ namespace ClassiCraft {
                 case "portaldarkgray": return (byte)134;
                 case "portalgray": return (byte)135;
                 case "portalwhite": return (byte)136;
-                case "portalyellowflower": return (byte)137;
-                case "portalredflower": return (byte)138;
-                case "portalmushroom": return (byte)139;
-                case "portalredmushroom": return (byte)140;
-                case "portalgold": return (byte)141;
-                case "portaliron": return (byte)142;
-                case "portalstaircasefull": return (byte)143;
-                case "portalstaircasestep": return (byte)144;
-                case "portalbrick": return (byte)145;
-                case "portaltnt": return (byte)146;
-                case "portalbookcase": return (byte)147;
-                case "portalstonevine": return (byte)148;
-                case "portalobsidian": return (byte)149;
                 default: unchecked { return (byte)-1; }
             }
         }

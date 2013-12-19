@@ -23,7 +23,6 @@ namespace ClassiCraft {
                     material = Block.Byte( args );
                 } else {
                     material = Block.Byte( args.Split( ' ' )[0] );
-                    multi = ( args.ToLower() == "true" ) ? true : false;
                 }
 
                 if ( material == Block.Air ) {

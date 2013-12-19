@@ -21,7 +21,6 @@ namespace ClassiCraft {
         public override void Use( Player p, string args ) {
             switch ( args ) {
                 case "":
-                    p.SendMessage( "&aHelp file:" );
             retry:
                     if ( File.Exists( "documentation/helpfile.txt" ) ) {
                         foreach ( string line in File.ReadAllLines( "documentation/helpfile.txt" ) ) {
