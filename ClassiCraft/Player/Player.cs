@@ -136,7 +136,11 @@ namespace ClassiCraft {
                     case 16:
                         length = 67;
                         break;
+                    case 17:
+                        length = 69;
+                        break;
                     default:
+                        Kick( "Unsupported packet ID: " + msg );
                         return new byte[0];
                 }
 
@@ -225,21 +229,19 @@ namespace ClassiCraft {
             if ( MagicNumber == 66 ) {
                 isCPECapable = true;
                 NameSuffix = "+";
-                SendExtInfo(4);
+                SendExtInfo(3);
 
                 SendExtEntry( "ClickDistance", 1 );
                 SendExtEntry( "CustomBlocks", 1 );
-                SendExtEntry( "MessageTypes", 1 );
+                SendExtEntry( "MessageTypes", 1 ); // don't think classicube supports this ext. yet
                 short ClickDistance;
                 
                 unchecked {
-                    ClickDistance = 0;
+                    ClickDistance = 0; // hmm this seems a good use for greifers
                 }
 
                 SendClickDistance( ClickDistance );
                 SendCustomBlockSupportLevel( 1 );
-
-                Thread.Sleep( 1000 );
             }
 
             ID = GetID();
@@ -434,7 +436,7 @@ namespace ClassiCraft {
             string appName = enc.GetString( message, 0, 64 );
             byte extCount = message[65];
 
-            Server.Log( appName.Trim() + " extCount: " + extCount );
+            Server.Log( appName.Trim() + "; extCount: " + extCount );
         }
 
         void HandleExtEntry( byte[] message ) {
