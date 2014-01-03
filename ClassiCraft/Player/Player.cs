@@ -117,30 +117,30 @@ namespace ClassiCraft {
                 switch ( msg ) {
                     case 0:
                         length = 130;
-                        break;
+                        break; // Login
                     case 5:
                         if ( !isLoggedIn )
                             goto default;
                         length = 8;
-                        break;
+                        break; // Blockchange
                     case 8:
                         if ( !isLoggedIn )
                             goto default;
                         length = 9;
-                        break;
+                        break; // Position
                     case 13:
                         if ( !isLoggedIn )
                             goto default;
                         length = 65;
-                        break;
+                        break; // Chat
                     case 16:
-                        length = 67;
-                        break;
+                        length = 66;
+                        break; // Extension Stats
                     case 17:
-                        length = 69;
-                        break;
+                        length = 68;
+                        break; // Extention Entry
                     default:
-                        Kick( "Unsupported packet ID: " + msg );
+                        //Kick( "Unsupported packet ID: " + msg );
                         return new byte[0];
                 }
 
@@ -180,7 +180,7 @@ namespace ClassiCraft {
                             break;
                     }
 
-                    if ( buffer.Length > 0 ) {
+                    if ( buffer.Length > 0 && msg != 17 ) {
                         buffer = HandleMessage( buffer );
                     } else {
                         return new byte[0];
@@ -440,7 +440,8 @@ namespace ClassiCraft {
         }
 
         void HandleExtEntry( byte[] message ) {
-            Server.Log( "RECIEVED EXTENTRY!!!" );
+            string extName = enc.GetString( message, 0, 64 );
+            Server.Log( "Client has the extension: " + extName );
         }
 
         #region Outgoing
