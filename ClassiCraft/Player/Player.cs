@@ -21,7 +21,7 @@ namespace ClassiCraft {
         public void ClearBlockChange() { OnBlockChange = null; }
 
         public delegate void DeathHandler(Player p);
-        public event DeathHandler OnDeath;
+        public event DeathHandler OnDeath = null;
         public void ClearDeath() { OnDeath = null; }
 
         public delegate void PosChangeHandler(Player p);
